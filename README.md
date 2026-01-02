@@ -24,7 +24,7 @@ Personal AI OS is a production-grade system that creates a personalized AI exper
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         Frontend (Next.js)                       │
+│                         Frontend (Next.js)                      │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
 │  │    Chat     │  │    Rules    │  │       Timeline          │  │
 │  │  Interface  │  │  Dashboard  │  │      (Audit Log)        │  │
@@ -32,7 +32,7 @@ Personal AI OS is a production-grade system that creates a personalized AI exper
 └────────────────────────────┬────────────────────────────────────┘
                              │ REST API
 ┌────────────────────────────┴────────────────────────────────────┐
-│                       Backend (FastAPI)                          │
+│                       Backend (FastAPI)                         │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐   │
 │  │  Interaction │  │  Rule Engine │  │    Prompt Builder    │   │
 │  │   Service    │  │   Service    │  │      Service         │   │
@@ -44,7 +44,7 @@ Personal AI OS is a production-grade system that creates a personalized AI exper
 └────────────────────────────┬────────────────────────────────────┘
                              │
 ┌────────────────────────────┴────────────────────────────────────┐
-│                        Storage Layer                             │
+│                        Storage Layer                            │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐   │
 │  │  PostgreSQL  │  │    Redis     │  │    FAISS (Vector)    │   │
 │  │   (Rules)    │  │   (Cache)    │  │      (Memory)        │   │
