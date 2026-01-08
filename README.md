@@ -8,6 +8,8 @@
   <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" />
   <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" />
   <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" />
+  <img src="https://img.shields.io/badge/Gemini-8E75B2?style=for-the-badge&logo=google&logoColor=white" />
+  <img src="https://img.shields.io/badge/Anthropic-191919?style=for-the-badge&logo=anthropic&logoColor=white" />
 </p>
 
 ## Overview
@@ -97,11 +99,11 @@ Lightweight semantic memory:
 ## Quick Start
 
 ### Prerequisites
-- Python 3.11+
+- Python 3.12+ (3.13 recommended)
 - Node.js 18+
 - PostgreSQL 15+
 - Redis 7+
-- OpenAI API key
+- API key for one of: **OpenAI**, **Google Gemini**, or **Anthropic Claude**
 
 ### Backend Setup
 
@@ -177,7 +179,7 @@ AI OS/
 │   │   │   ├── routes/          # API endpoints
 │   │   │   └── schemas/         # Pydantic models
 │   │   ├── core/
-│   │   │   ├── llm.py           # OpenAI client
+│   │   │   ├── llm.py           # Multi-provider LLM client (OpenAI/Gemini/Anthropic)
 │   │   │   ├── prompts.py       # Prompt templates
 │   │   │   ├── algorithms.py    # Confidence, decay, ranking
 │   │   │   └── extraction.py    # Rule extraction logic
@@ -213,10 +215,12 @@ AI OS/
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| `LLM_PROVIDER` | LLM provider to use | `openai` |
 | `DATABASE_URL` | PostgreSQL connection string | Required |
 | `REDIS_URL` | Redis connection string | `redis://localhost:6379/0` |
-| `OPENAI_API_KEY` | OpenAI API key | Required |
-| `LLM_MODEL` | Model to use | `gpt-4-turbo-preview` |
+| `OPENAI_API_KEY` | OpenAI API key | Required if using OpenAI |
+| `GOOGLE_API_KEY` | Google Gemini API key | Required if using Gemini |
+| `ANTHROPIC_API_KEY` | Anthropic API key | Required if using Anthropic |
 | `CONFIDENCE_THRESHOLD` | Min confidence for rule application | `0.3` |
 | `DECAY_RATE` | Confidence decay per week | `0.05` |
 | `SIMILARITY_THRESHOLD` | Threshold for duplicate detection | `0.85` |
