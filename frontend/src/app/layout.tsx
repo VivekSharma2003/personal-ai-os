@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { Sidebar } from '@/components/layout/Sidebar';
+import { ThemeProvider } from '@/components/layout/ThemeProvider';
+import { CommandPalette } from '@/components/ui/CommandPalette';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,15 +19,18 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en" className="dark">
+        <html lang="en" suppressHydrationWarning>
             <body className={inter.className}>
-                <div className="flex h-screen">
-                    <Sidebar />
-                    <main className="flex-1 overflow-hidden">
-                        {children}
-                    </main>
-                </div>
-                <Toaster />
+                <ThemeProvider>
+                    <div className="flex h-screen">
+                        <Sidebar />
+                        <main className="flex-1 overflow-hidden">
+                            {children}
+                        </main>
+                    </div>
+                    <CommandPalette />
+                    <Toaster />
+                </ThemeProvider>
             </body>
         </html>
     );
