@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type { LucideIcon } from 'lucide-react';
 import {
     Clock,
     Plus,
@@ -17,8 +18,15 @@ import { api, AuditEvent } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { cn, formatDate, formatTime, formatRelativeTime } from '@/lib/utils';
 
-const eventTypes = [
-    { value: 'all', label: 'All Events' },
+interface EventType {
+    value: string;
+    label: string;
+    icon: LucideIcon;
+    color: string;
+}
+
+const eventTypes: EventType[] = [
+    { value: 'all', label: 'All Events', icon: Clock, color: 'text-muted-foreground' },
     { value: 'rule_created', label: 'Created', icon: Plus, color: 'text-green-500' },
     { value: 'rule_applied', label: 'Applied', icon: Zap, color: 'text-blue-500' },
     { value: 'rule_reinforced', label: 'Reinforced', icon: RefreshCw, color: 'text-purple-500' },
@@ -30,7 +38,7 @@ const eventTypes = [
     { value: 'rule_enabled', label: 'Enabled', icon: ToggleRight, color: 'text-green-500' },
 ];
 
-function getEventDetails(event: AuditEvent) {
+function getEventDetails(event: AuditEvent): EventType {
     const eventType = eventTypes.find(e => e.value === event.event_type);
     return eventType || { value: event.event_type, label: event.event_type, icon: Clock, color: 'text-muted-foreground' };
 }
@@ -87,23 +95,26 @@ export default function TimelinePage() {
             <div className="px-6 py-4 flex items-center gap-4 border-b border-border">
                 <Filter className="w-4 h-4 text-muted-foreground" />
                 <div className="flex flex-wrap gap-2">
-                    {eventTypes.map(type => (
-                        <button
-                            key={type.value}
-                            onClick={() => setEventTypeFilter(type.value)}
-                            className={cn(
-                                'px-3 py-1.5 rounded-lg text-sm transition-smooth flex items-center gap-1.5',
-                                eventTypeFilter === type.value
-                                    ? 'bg-primary text-primary-foreground'
-                                    : 'bg-muted hover:bg-muted/80'
-                            )}
-                        >
-                            {type.value !== 'all' && (
-                                <type.icon className={cn('w-3.5 h-3.5', eventTypeFilter === type.value ? '' : type.color)} />
-                            )}
-                            {type.label}
-                        </button>
-                    ))}
+                    {eventTypes.map(type => {
+                        const Icon = type.icon;
+                        return (
+                            <button
+                                key={type.value}
+                                onClick={() => setEventTypeFilter(type.value)}
+                                className={cn(
+                                    'px-3 py-1.5 rounded-lg text-sm transition-smooth flex items-center gap-1.5',
+                                    eventTypeFilter === type.value
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'bg-muted hover:bg-muted/80'
+                                )}
+                            >
+                                {type.value !== 'all' && (
+                                    <Icon className={cn('w-3.5 h-3.5', eventTypeFilter === type.value ? '' : type.color)} />
+                                )}
+                                {type.label}
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 
@@ -164,20 +175,20 @@ export default function TimelinePage() {
 
                                                             {event.event_data && Object.keys(event.event_data).length > 0 && (
                                                                 <div className="text-sm text-muted-foreground space-y-1">
-                                                                    {event.event_data.content && (
-                                                                        <p className="truncate">Rule: {event.event_data.content as string}</p>
+                                                                    {!!event.event_data.content && (
+                                                                        <p className="truncate">Rule: {String(event.event_data.content)}</p>
                                                                     )}
                                                                     {event.event_data.old_confidence !== undefined && (
                                                                         <p>
-                                                                            Confidence: {Math.round((event.event_data.old_confidence as number) * 100)}% →{' '}
-                                                                            {Math.round((event.event_data.new_confidence as number) * 100)}%
+                                                                            Confidence: {Math.round(Number(event.event_data.old_confidence) * 100)}% →{' '}
+                                                                            {Math.round(Number(event.event_data.new_confidence) * 100)}%
                                                                         </p>
                                                                     )}
-                                                                    {event.event_data.reason && (
-                                                                        <p>Reason: {event.event_data.reason as string}</p>
+                                                                    {!!event.event_data.reason && (
+                                                                        <p>Reason: {String(event.event_data.reason)}</p>
                                                                     )}
                                                                     {event.event_data.times_applied !== undefined && (
-                                                                        <p>Total applications: {event.event_data.times_applied as number}</p>
+                                                                        <p>Total applications: {Number(event.event_data.times_applied)}</p>
                                                                     )}
                                                                 </div>
                                                             )}
