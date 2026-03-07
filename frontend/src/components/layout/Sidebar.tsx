@@ -15,6 +15,7 @@ import {
     PanelLeftClose,
     PanelLeft,
     Command,
+    Brain,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from './ThemeToggle';
@@ -22,6 +23,7 @@ import { useConversations } from '@/hooks/useConversations';
 
 const navItems = [
     { href: '/', label: 'Chat', icon: MessageSquare, description: 'Talk with AI' },
+    { href: '/insights', label: 'Insights', icon: Brain, description: 'AI brain health' },
     { href: '/rules', label: 'Rules', icon: BookOpen, description: 'Your preferences' },
     { href: '/timeline', label: 'Timeline', icon: Clock, description: 'Activity log' },
 ];
