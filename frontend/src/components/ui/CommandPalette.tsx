@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, MessageSquare, BookOpen, Clock, Sun, Moon, Zap, X } from 'lucide-react';
+import { Search, MessageSquare, BookOpen, Clock, Sun, Moon, Zap, X, Brain, Eye, GraduationCap, Mic } from 'lucide-react';
 import { useTheme } from '@/components/layout/ThemeProvider';
 import { cn } from '@/lib/utils';
 
@@ -89,6 +89,50 @@ export function CommandPalette() {
             },
             shortcut: '/',
             category: 'Chat',
+        },
+        {
+            id: 'go-insights',
+            label: 'Go to Insights',
+            description: 'View AI brain health and stats',
+            icon: Brain,
+            action: () => router.push('/insights'),
+            category: 'Navigation',
+        },
+        {
+            id: 'search-conversations',
+            label: 'Search Conversations',
+            description: 'Search through past conversations',
+            icon: Eye,
+            action: () => {
+                setOpen(false);
+                setTimeout(() => {
+                    window.dispatchEvent(new CustomEvent('ai-os:open-spotlight'));
+                }, 100);
+            },
+            shortcut: '⌘⇧F',
+            category: 'Chat',
+        },
+        {
+            id: 'start-tour',
+            label: 'Start Tour',
+            description: 'Take a guided tour of the interface',
+            icon: GraduationCap,
+            action: () => {
+                localStorage.removeItem('ai-os-tour-completed');
+                window.dispatchEvent(new CustomEvent('ai-os:start-tour'));
+            },
+            category: 'Settings',
+        },
+        {
+            id: 'toggle-focus',
+            label: 'Toggle Focus Mode',
+            description: 'Minimize distractions',
+            icon: Eye,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:toggle-focus'));
+            },
+            shortcut: '⌘.',
+            category: 'Settings',
         },
     ];
 
