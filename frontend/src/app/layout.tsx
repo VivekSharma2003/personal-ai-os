@@ -5,6 +5,9 @@ import { Toaster } from '@/components/ui/toaster';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { ThemeProvider } from '@/components/layout/ThemeProvider';
 import { CommandPalette } from '@/components/ui/CommandPalette';
+import { SpotlightSearch } from '@/components/ui/SpotlightSearch';
+import { OnboardingTour } from '@/components/ui/OnboardingTour';
+import { FocusModeProvider } from '@/components/layout/FocusMode';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,16 +25,21 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <body className={inter.className}>
                 <ThemeProvider>
-                    <div className="flex h-screen">
-                        <Sidebar />
-                        <main className="flex-1 overflow-hidden">
-                            {children}
-                        </main>
-                    </div>
-                    <CommandPalette />
-                    <Toaster />
+                    <FocusModeProvider>
+                        <div className="flex h-screen">
+                            <Sidebar />
+                            <main className="flex-1 overflow-hidden">
+                                {children}
+                            </main>
+                        </div>
+                        <CommandPalette />
+                        <SpotlightSearch />
+                        <OnboardingTour />
+                        <Toaster />
+                    </FocusModeProvider>
                 </ThemeProvider>
             </body>
         </html>
     );
 }
+
