@@ -4,8 +4,11 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Loader2, Sparkles, MessageSquare, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MarkdownRenderer } from '@/components/ui/MarkdownRenderer';
+import { ParticleBackground } from '@/components/ui/ParticleBackground';
+import { VoiceInput } from '@/components/ui/VoiceInput';
 import { useToast } from '@/hooks/use-toast';
 import { useConversations } from '@/hooks/useConversations';
+import { useFocusMode } from '@/components/layout/FocusMode';
 import { api, ChatResponse, FeedbackResponse } from '@/lib/api';
 import { cn, generateId } from '@/lib/utils';
 
@@ -122,6 +125,7 @@ export default function ChatPage() {
     const { toast } = useToast();
     const conversationId = useRef(generateId());
     const { saveConversation, loadConversation, setActive, activeId, loaded } = useConversations();
+    const { focusMode } = useFocusMode();
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -261,7 +265,8 @@ export default function ChatPage() {
             </header>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto relative">
+                <ParticleBackground intensified={focusMode} />
                 <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
                     {messages.length === 0 && (
                         <div className="flex flex-col items-center justify-center h-[60vh] text-center">
@@ -416,6 +421,10 @@ export default function ChatPage() {
                                 rows={1}
                             />
                         </div>
+                        <VoiceInput
+                            onTranscript={(text) => setInput((prev) => prev + (prev ? ' ' : '') + text)}
+                            disabled={isLoading}
+                        />
                         <Button
                             onClick={handleSend}
                             disabled={!input.trim() || isLoading}
