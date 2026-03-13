@@ -20,6 +20,7 @@ import {
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from './ThemeToggle';
 import { useConversations } from '@/hooks/useConversations';
+import { NotificationCenter } from '@/components/ui/NotificationCenter';
 
 const navItems = [
     { href: '/', label: 'Chat', icon: MessageSquare, description: 'Talk with AI' },
@@ -209,6 +210,7 @@ export function Sidebar() {
                 {/* Theme toggle + Collapse toggle */}
                 <div className={cn('flex items-center', collapsed ? 'flex-col gap-2' : 'gap-2 px-1')}>
                     <ThemeToggle />
+                    <NotificationCenter />
                     <button
                         onClick={toggleCollapsed}
                         className={cn(
