@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { MarkdownRenderer } from '@/components/ui/MarkdownRenderer';
 import { ParticleBackground } from '@/components/ui/ParticleBackground';
 import { VoiceInput } from '@/components/ui/VoiceInput';
+import { ChatExport } from '@/components/ui/ChatExport';
+import { MessageReactions } from '@/components/ui/MessageReactions';
 import { useToast } from '@/hooks/use-toast';
 import { useConversations } from '@/hooks/useConversations';
 import { useFocusMode } from '@/components/layout/FocusMode';
@@ -261,6 +263,7 @@ export default function ChatPage() {
                     <kbd className="hidden sm:flex items-center gap-1 px-2 py-1 bg-muted rounded-md text-xs text-muted-foreground font-mono">
                         ⌘K
                     </kbd>
+                    <ChatExport messages={messages} />
                 </div>
             </header>
 
@@ -368,6 +371,8 @@ export default function ChatPage() {
                                         </div>
                                     </div>
                                 )}
+
+                                <MessageReactions messageId={message.id} />
                             </div>
 
                             {message.role === 'user' && (
