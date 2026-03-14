@@ -7,7 +7,9 @@ import { ThemeProvider } from '@/components/layout/ThemeProvider';
 import { CommandPalette } from '@/components/ui/CommandPalette';
 import { SpotlightSearch } from '@/components/ui/SpotlightSearch';
 import { OnboardingTour } from '@/components/ui/OnboardingTour';
+import { ShortcutsSheet } from '@/components/ui/ShortcutsSheet';
 import { FocusModeProvider } from '@/components/layout/FocusMode';
+import { StatusBar } from '@/components/layout/StatusBar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -26,15 +28,19 @@ export default function RootLayout({
             <body className={inter.className}>
                 <ThemeProvider>
                     <FocusModeProvider>
-                        <div className="flex h-screen">
-                            <Sidebar />
-                            <main className="flex-1 overflow-hidden">
-                                {children}
-                            </main>
+                        <div className="flex flex-col h-screen">
+                            <div className="flex flex-1 overflow-hidden">
+                                <Sidebar />
+                                <main className="flex-1 overflow-hidden">
+                                    {children}
+                                </main>
+                            </div>
+                            <StatusBar />
                         </div>
                         <CommandPalette />
                         <SpotlightSearch />
                         <OnboardingTour />
+                        <ShortcutsSheet />
                         <Toaster />
                     </FocusModeProvider>
                 </ThemeProvider>
@@ -42,4 +48,3 @@ export default function RootLayout({
         </html>
     );
 }
-
