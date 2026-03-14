@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, MessageSquare, BookOpen, Clock, Sun, Moon, Zap, X, Brain, Eye, GraduationCap, Mic } from 'lucide-react';
+import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap } from 'lucide-react';
 import { useTheme } from '@/components/layout/ThemeProvider';
 import { cn } from '@/lib/utils';
 
@@ -132,6 +132,17 @@ export function CommandPalette() {
                 window.dispatchEvent(new CustomEvent('ai-os:toggle-focus'));
             },
             shortcut: '⌘.',
+            category: 'Settings',
+        },
+        {
+            id: 'show-shortcuts',
+            label: 'Show Keyboard Shortcuts',
+            description: 'View all available keyboard shortcuts',
+            icon: Keyboard,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-shortcuts'));
+            },
+            shortcut: '⌘/',
             category: 'Settings',
         },
     ];
