@@ -8,6 +8,9 @@ import { ParticleBackground } from '@/components/ui/ParticleBackground';
 import { VoiceInput } from '@/components/ui/VoiceInput';
 import { ChatExport } from '@/components/ui/ChatExport';
 import { MessageReactions } from '@/components/ui/MessageReactions';
+import { PromptTemplates } from '@/components/ui/PromptTemplates';
+import { BookmarkButton } from '@/components/ui/MessageBookmarks';
+import { ScrollNavigator } from '@/components/ui/ScrollNavigator';
 import { useToast } from '@/hooks/use-toast';
 import { useConversations } from '@/hooks/useConversations';
 import { useFocusMode } from '@/components/layout/FocusMode';
@@ -93,6 +96,13 @@ function AssistantMessage({
                     )}
                 </div>
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-smooth">
+                    <BookmarkButton
+                        messageId={message.id}
+                        conversationId=""
+                        conversationTitle=""
+                        content={message.content}
+                        role={message.role}
+                    />
                     <button
                         onClick={handleCopy}
                         className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-smooth"
@@ -124,6 +134,7 @@ export default function ChatPage() {
     const [correctionText, setCorrectionText] = useState('');
     const [latestAssistantId, setLatestAssistantId] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
     const { toast } = useToast();
     const conversationId = useRef(generateId());
     const { saveConversation, loadConversation, setActive, activeId, loaded } = useConversations();
@@ -268,8 +279,9 @@ export default function ChatPage() {
             </header>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto relative">
+            <div ref={messagesContainerRef} className="flex-1 overflow-y-auto relative">
                 <ParticleBackground intensified={focusMode} />
+                <ScrollNavigator containerRef={messagesContainerRef} messageCount={messages.length} />
                 <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
                     {messages.length === 0 && (
                         <div className="flex flex-col items-center justify-center h-[60vh] text-center">
@@ -430,6 +442,7 @@ export default function ChatPage() {
                             onTranscript={(text) => setInput((prev) => prev + (prev ? ' ' : '') + text)}
                             disabled={isLoading}
                         />
+                        <PromptTemplates onSelect={(prompt) => setInput(prompt)} />
                         <Button
                             onClick={handleSend}
                             disabled={!input.trim() || isLoading}
