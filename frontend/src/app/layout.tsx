@@ -8,6 +8,7 @@ import { CommandPalette } from '@/components/ui/CommandPalette';
 import { SpotlightSearch } from '@/components/ui/SpotlightSearch';
 import { OnboardingTour } from '@/components/ui/OnboardingTour';
 import { ShortcutsSheet } from '@/components/ui/ShortcutsSheet';
+import { AccentPicker } from '@/components/ui/AccentPicker';
 import { FocusModeProvider } from '@/components/layout/FocusMode';
 import { StatusBar } from '@/components/layout/StatusBar';
 
@@ -41,6 +42,7 @@ export default function RootLayout({
                         <SpotlightSearch />
                         <OnboardingTour />
                         <ShortcutsSheet />
+                        <AccentPicker />
                         <Toaster />
                     </FocusModeProvider>
                 </ThemeProvider>
