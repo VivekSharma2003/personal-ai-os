@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { ThemeToggle } from './ThemeToggle';
 import { useConversations } from '@/hooks/useConversations';
 import { NotificationCenter } from '@/components/ui/NotificationCenter';
+import { TagDot, TagPicker } from '@/components/ui/ConversationTags';
 
 const navItems = [
     { href: '/', label: 'Chat', icon: MessageSquare, description: 'Talk with AI' },
@@ -33,6 +34,7 @@ export function Sidebar() {
     const pathname = usePathname();
     const [collapsed, setCollapsed] = useState(false);
     const { conversations, activeId, deleteConversation, setActive } = useConversations();
+    const [tagPickerId, setTagPickerId] = useState<string | null>(null);
 
     // Load collapsed state from localStorage
     useEffect(() => {
@@ -169,7 +171,26 @@ export function Sidebar() {
                                 onClick={() => handleLoadConversation(conv.id)}
                             >
                                 <MessageSquare className="w-3.5 h-3.5 flex-shrink-0 opacity-50" />
+                                <TagDot conversationId={conv.id} />
                                 <span className="flex-1 text-xs truncate">{conv.title}</span>
+                                <div className="relative">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setTagPickerId(tagPickerId === conv.id ? null : conv.id);
+                                        }}
+                                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-accent rounded transition-smooth"
+                                        title="Tag conversation"
+                                    >
+                                        <span className="text-[10px]">🏷️</span>
+                                    </button>
+                                    {tagPickerId === conv.id && (
+                                        <TagPicker
+                                            conversationId={conv.id}
+                                            onClose={() => setTagPickerId(null)}
+                                        />
+                                    )}
+                                </div>
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
