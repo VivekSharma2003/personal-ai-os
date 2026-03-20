@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap } from 'lucide-react';
+import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap, Palette } from 'lucide-react';
 import { useTheme } from '@/components/layout/ThemeProvider';
 import { cn } from '@/lib/utils';
 
@@ -143,6 +143,16 @@ export function CommandPalette() {
                 window.dispatchEvent(new CustomEvent('ai-os:open-shortcuts'));
             },
             shortcut: '⌘/',
+            category: 'Settings',
+        },
+        {
+            id: 'accent-color',
+            label: 'Change Accent Color',
+            description: 'Customize the app accent color',
+            icon: Palette,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-accent-picker'));
+            },
             category: 'Settings',
         },
     ];
