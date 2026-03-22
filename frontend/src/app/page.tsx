@@ -11,6 +11,9 @@ import { MessageReactions } from '@/components/ui/MessageReactions';
 import { PromptTemplates } from '@/components/ui/PromptTemplates';
 import { BookmarkButton } from '@/components/ui/MessageBookmarks';
 import { ScrollNavigator } from '@/components/ui/ScrollNavigator';
+import { SmartSuggestions } from '@/components/ui/SmartSuggestions';
+import { ThinkingAnimation } from '@/components/ui/ThinkingAnimation';
+import { ChatStats } from '@/components/ui/ChatStats';
 import { useToast } from '@/hooks/use-toast';
 import { useConversations } from '@/hooks/useConversations';
 import { useFocusMode } from '@/components/layout/FocusMode';
@@ -137,6 +140,7 @@ export default function ChatPage() {
     const messagesContainerRef = useRef<HTMLDivElement>(null);
     const { toast } = useToast();
     const conversationId = useRef(generateId());
+    const sessionStart = useRef(Date.now());
     const { saveConversation, loadConversation, setActive, activeId, loaded } = useConversations();
     const { focusMode } = useFocusMode();
 
@@ -278,6 +282,11 @@ export default function ChatPage() {
                 </div>
             </header>
 
+            {/* Chat Stats */}
+            {messages.length > 0 && (
+                <ChatStats messages={messages} sessionStart={sessionStart.current} />
+            )}
+
             {/* Messages */}
             <div ref={messagesContainerRef} className="flex-1 overflow-y-auto relative">
                 <ParticleBackground intensified={focusMode} />
@@ -387,6 +396,19 @@ export default function ChatPage() {
                                 <MessageReactions messageId={message.id} />
                             </div>
 
+                            {/* Smart Suggestions after latest assistant message */}
+                            {message.role === 'assistant' &&
+                                message.id === latestAssistantId &&
+                                !isLoading && (
+                                    <SmartSuggestions
+                                        onSelect={(prompt) => {
+                                            setInput(prompt);
+                                            setTimeout(() => handleSend(), 100);
+                                        }}
+                                        visible={true}
+                                    />
+                                )}
+
                             {message.role === 'user' && (
                                 <div className="w-8 h-8 rounded-lg bg-foreground/10 flex items-center justify-center flex-shrink-0 mt-1">
                                     <span className="text-xs font-medium text-foreground">U</span>
@@ -395,20 +417,7 @@ export default function ChatPage() {
                         </div>
                     ))}
 
-                    {isLoading && (
-                        <div className="flex gap-4 animate-fade-in">
-                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mt-1">
-                                <Sparkles className="w-4 h-4 text-primary" />
-                            </div>
-                            <div className="bg-secondary rounded-2xl px-4 py-3">
-                                <div className="flex gap-1.5">
-                                    <div className="typing-dot" />
-                                    <div className="typing-dot" />
-                                    <div className="typing-dot" />
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    {isLoading && <ThinkingAnimation />}
 
                     <div ref={messagesEndRef} />
                 </div>
