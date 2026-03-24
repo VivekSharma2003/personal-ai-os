@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap, Palette } from 'lucide-react';
+import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap, Palette, StickyNote, Scissors } from 'lucide-react';
 import { useTheme } from '@/components/layout/ThemeProvider';
 import { cn } from '@/lib/utils';
 
@@ -154,6 +154,27 @@ export function CommandPalette() {
                 window.dispatchEvent(new CustomEvent('ai-os:open-accent-picker'));
             },
             category: 'Settings',
+        },
+        {
+            id: 'open-scratchpad',
+            label: 'Open Scratchpad',
+            description: 'Quick notes while chatting',
+            icon: StickyNote,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-scratchpad'));
+            },
+            shortcut: '⌘J',
+            category: 'Tools',
+        },
+        {
+            id: 'view-snippets',
+            label: 'View Saved Snippets',
+            description: 'Browse your saved code snippets',
+            icon: Scissors,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-snippets'));
+            },
+            category: 'Tools',
         },
     ];
 
