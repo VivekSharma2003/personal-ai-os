@@ -9,6 +9,8 @@ import { SpotlightSearch } from '@/components/ui/SpotlightSearch';
 import { OnboardingTour } from '@/components/ui/OnboardingTour';
 import { ShortcutsSheet } from '@/components/ui/ShortcutsSheet';
 import { AccentPicker } from '@/components/ui/AccentPicker';
+import { Scratchpad } from '@/components/ui/Scratchpad';
+import { SnippetLibrary } from '@/components/ui/SnippetSaver';
 import { FocusModeProvider } from '@/components/layout/FocusMode';
 import { StatusBar } from '@/components/layout/StatusBar';
 
@@ -43,6 +45,8 @@ export default function RootLayout({
                         <OnboardingTour />
                         <ShortcutsSheet />
                         <AccentPicker />
+                        <Scratchpad />
+                        <SnippetLibrary />
                         <Toaster />
                     </FocusModeProvider>
                 </ThemeProvider>
