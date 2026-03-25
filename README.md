@@ -56,7 +56,9 @@ Personal AI OS is a production-grade system that creates a personalized AI exper
 
 ## Features
 
-### 1. Rule Learning
+### Core AI Engine
+
+#### 1. Rule Learning
 When you correct the AI (e.g., "don't use em dashes"), the system:
 - Detects correction intent using LLM
 - Extracts a generalized, reusable rule
@@ -64,25 +66,69 @@ When you correct the AI (e.g., "don't use em dashes"), the system:
 - Checks for duplicates via semantic similarity
 - Assigns initial confidence score (0.5)
 
-### 2. Rule Application
+#### 2. Rule Application
 Every AI response automatically:
 - Retrieves user's active rules from cache
 - Ranks rules by relevance to current context
 - Injects top rules into system prompt
 - Tracks which rules were applied
 
-### 3. Confidence & Decay
+#### 3. Confidence & Decay
 Rules have dynamic confidence scores:
 - **Reinforcement**: +0.1 when user repeats the preference
 - **Application**: Tracked for analytics
 - **Decay**: -0.05 per week unused
 - **Archival**: Rules below 0.2 confidence are archived
 
-### 4. Memory System
+#### 4. Memory System
 Lightweight semantic memory:
 - Stores interaction embeddings in FAISS
 - Enables similarity search for ambiguous cases
 - Helps resolve borderline rule applications
+
+### Frontend Features
+
+#### 🎨 UI & Experience
+| Feature | Description | Shortcut |
+|---------|-------------|----------|
+| **Dark/Light Theme** | Toggle between themes with smooth transitions | — |
+| **Command Palette** | Quick access to all commands and navigation | `⌘K` |
+| **Animated Particle Background** | Canvas-based floating nodes with connecting lines | — |
+| **Focus Mode** | Minimize distractions, intensify particles | `⌘.` |
+| **Accent Color Picker** | 8 preset accent colors, live preview | `⌘K` → "Accent" |
+| **Animated Status Bar** | Backend health indicator + active rules + last sync | — |
+| **Interactive Onboarding Tour** | SVG spotlight-guided tour for new users | `⌘K` → "Tour" |
+
+#### 💬 Chat
+| Feature | Description | Shortcut |
+|---------|-------------|----------|
+| **Markdown Rendering** | Rich markdown with syntax highlighting | — |
+| **Typewriter Effect** | Streaming text animation for AI responses | — |
+| **AI Thinking Animation** | Shimmer effect + rotating status messages | — |
+| **Smart Suggestions** | Contextual follow-up prompt chips after AI replies | — |
+| **Voice Input** | Speech-to-text via Web Speech API | 🎤 button |
+| **Emoji Reactions** | React to messages with 👍 ❤️ 😂 🎯 🔥 💡 | Hover message |
+| **Message Bookmarks** | Pin important messages for quick reference | Hover message |
+| **Chat Export** | Download/copy conversations as Markdown | Export button |
+| **Chat Stats** | Message count, word count, session duration | Collapsible bar |
+| **Scroll Navigator** | Floating FAB with new message count | Auto on scroll |
+
+#### 🛠️ Productivity
+| Feature | Description | Shortcut |
+|---------|-------------|----------|
+| **Prompt Templates** | Categorized templates + custom saves | 📋 button |
+| **Snippet Saver** | Save code blocks from AI responses | `⌘K` → "Snippets" |
+| **Quick Notes Scratchpad** | Auto-saving notepad while chatting | `⌘J` |
+| **Spotlight Search** | Fuzzy search past conversations | `⌘⇧F` |
+| **Keyboard Shortcuts Sheet** | View all available shortcuts | `⌘/` |
+
+#### 📊 Insights & Organization
+| Feature | Description | Shortcut |
+|---------|-------------|----------|
+| **AI Insights Dashboard** | Brain health gauge, rule stats, activity feed | Sidebar → Insights |
+| **Notification Center** | Bell icon with unread event badge | Sidebar footer |
+| **Conversation Tags** | Color-coded labels (🔴🟡🟢🔵🟣) | Sidebar → 🏷️ |
+| **Conversation History** | Auto-saved with sidebar management | Sidebar |
 
 ## API Endpoints
 
@@ -198,11 +244,38 @@ AI OS/
     └── src/
         ├── app/
         │   ├── page.tsx         # Chat interface
-        │   ├── rules/page.tsx   # Rules dashboard
-        │   └── timeline/page.tsx # Audit timeline
+        │   ├── layout.tsx       # Root layout with all providers
+        │   ├── insights/        # AI Insights dashboard
+        │   ├── rules/           # Rules management
+        │   └── timeline/        # Audit timeline
         ├── components/
-        │   ├── ui/              # Base components
-        │   └── layout/          # Layout components
+        │   ├── ui/
+        │   │   ├── CommandPalette.tsx      # ⌘K command palette
+        │   │   ├── SpotlightSearch.tsx     # ⌘⇧F conversation search
+        │   │   ├── ShortcutsSheet.tsx      # ⌘/ shortcuts modal
+        │   │   ├── OnboardingTour.tsx      # Interactive tour
+        │   │   ├── ParticleBackground.tsx  # Animated background
+        │   │   ├── MarkdownRenderer.tsx    # Rich markdown
+        │   │   ├── VoiceInput.tsx          # Speech-to-text
+        │   │   ├── ChatExport.tsx          # Export conversations
+        │   │   ├── MessageReactions.tsx    # Emoji reactions
+        │   │   ├── MessageBookmarks.tsx    # Bookmark messages
+        │   │   ├── PromptTemplates.tsx     # Template library
+        │   │   ├── ConversationTags.tsx    # Color-coded tags
+        │   │   ├── ScrollNavigator.tsx     # Scroll FAB
+        │   │   ├── AccentPicker.tsx        # Accent color picker
+        │   │   ├── SmartSuggestions.tsx    # Follow-up prompts
+        │   │   ├── ThinkingAnimation.tsx   # Loading animation
+        │   │   ├── ChatStats.tsx           # Chat metrics
+        │   │   ├── Scratchpad.tsx          # Quick notes
+        │   │   ├── SnippetSaver.tsx        # Code snippet library
+        │   │   └── NotificationCenter.tsx  # Bell notifications
+        │   └── layout/
+        │       ├── Sidebar.tsx    # Collapsible sidebar
+        │       ├── FocusMode.tsx  # ⌘. focus mode
+        │       ├── StatusBar.tsx  # Bottom status bar
+        │       ├── ThemeProvider.tsx
+        │       └── ThemeToggle.tsx
         ├── lib/
         │   ├── api.ts           # API client
         │   └── utils.ts         # Utilities
