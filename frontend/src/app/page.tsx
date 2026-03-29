@@ -14,6 +14,10 @@ import { ScrollNavigator } from '@/components/ui/ScrollNavigator';
 import { SmartSuggestions } from '@/components/ui/SmartSuggestions';
 import { ThinkingAnimation } from '@/components/ui/ThinkingAnimation';
 import { ChatStats } from '@/components/ui/ChatStats';
+import { ReadAloud } from '@/components/ui/ReadAloud';
+import { PersonaSwitcher } from '@/components/ui/PersonaSwitcher';
+import { ShareCardButton } from '@/components/ui/ShareCard';
+import { AutoComplete } from '@/components/ui/AutoComplete';
 import { useToast } from '@/hooks/use-toast';
 import { useConversations } from '@/hooks/useConversations';
 import { useFocusMode } from '@/components/layout/FocusMode';
@@ -106,6 +110,10 @@ function AssistantMessage({
                         content={message.content}
                         role={message.role}
                     />
+                    {message.role === 'assistant' && (
+                        <ReadAloud content={message.content} />
+                    )}
+                    <ShareCardButton content={message.content} role={message.role} />
                     <button
                         onClick={handleCopy}
                         className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-smooth"
@@ -278,6 +286,7 @@ export default function ChatPage() {
                     <kbd className="hidden sm:flex items-center gap-1 px-2 py-1 bg-muted rounded-md text-xs text-muted-foreground font-mono">
                         ⌘K
                     </kbd>
+                    <PersonaSwitcher />
                     <ChatExport messages={messages} />
                 </div>
             </header>
@@ -428,6 +437,10 @@ export default function ChatPage() {
                 <div className="max-w-3xl mx-auto px-4 py-4">
                     <div className="flex gap-3 items-end">
                         <div className="flex-1 relative">
+                            <AutoComplete
+                                input={input}
+                                onAccept={(text) => setInput(text)}
+                            />
                             <textarea
                                 value={input}
                                 onChange={(e) => {
