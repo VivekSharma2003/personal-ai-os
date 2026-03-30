@@ -112,6 +112,10 @@ Lightweight semantic memory:
 | **Chat Export** | Download/copy conversations as Markdown | Export button |
 | **Chat Stats** | Message count, word count, session duration | Collapsible bar |
 | **Scroll Navigator** | Floating FAB with new message count | Auto on scroll |
+| **Read Aloud** | Text-to-speech for AI responses (Web Speech API) | 🔊 button |
+| **AI Persona Switcher** | Switch between Creative, Technical, Concise, Professional | Header dropdown |
+| **Share Cards** | Generate beautiful gradient cards from messages | Share button |
+| **Inline Auto-Complete** | Ghost text suggestions, press Tab to accept | `Tab` |
 
 #### 🛠️ Productivity
 | Feature | Description | Shortcut |
@@ -121,6 +125,7 @@ Lightweight semantic memory:
 | **Quick Notes Scratchpad** | Auto-saving notepad while chatting | `⌘J` |
 | **Spotlight Search** | Fuzzy search past conversations | `⌘⇧F` |
 | **Keyboard Shortcuts Sheet** | View all available shortcuts | `⌘/` |
+| **Pomodoro Timer** | 25/5 focus timer with progress ring and audio alert | `⌘P` |
 
 #### 📊 Insights & Organization
 | Feature | Description | Shortcut |
