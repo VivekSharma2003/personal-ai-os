@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap, Palette, StickyNote, Scissors } from 'lucide-react';
+import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap, Palette, StickyNote, Scissors, Timer } from 'lucide-react';
 import { useTheme } from '@/components/layout/ThemeProvider';
 import { cn } from '@/lib/utils';
 
@@ -174,6 +174,17 @@ export function CommandPalette() {
             action: () => {
                 window.dispatchEvent(new CustomEvent('ai-os:open-snippets'));
             },
+            category: 'Tools',
+        },
+        {
+            id: 'start-pomodoro',
+            label: 'Start Pomodoro Timer',
+            description: 'Focus timer (25min work / 5min break)',
+            icon: Timer,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-pomodoro'));
+            },
+            shortcut: '⌘P',
             category: 'Tools',
         },
     ];
