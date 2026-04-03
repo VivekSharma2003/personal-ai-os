@@ -18,6 +18,10 @@ import { ReadAloud } from '@/components/ui/ReadAloud';
 import { PersonaSwitcher } from '@/components/ui/PersonaSwitcher';
 import { ShareCardButton } from '@/components/ui/ShareCard';
 import { AutoComplete } from '@/components/ui/AutoComplete';
+import { ConversationSummary } from '@/components/ui/ConversationSummary';
+import { SlashCommands } from '@/components/ui/SlashCommands';
+import { useChatBackground } from '@/components/ui/ChatBackground';
+import { TypingSpeed } from '@/components/ui/TypingSpeed';
 import { useToast } from '@/hooks/use-toast';
 import { useConversations } from '@/hooks/useConversations';
 import { useFocusMode } from '@/components/layout/FocusMode';
@@ -287,6 +291,7 @@ export default function ChatPage() {
                         ⌘K
                     </kbd>
                     <PersonaSwitcher />
+                    <ConversationSummary messages={messages} />
                     <ChatExport messages={messages} />
                 </div>
             </header>
@@ -434,7 +439,11 @@ export default function ChatPage() {
 
             {/* Input */}
             <div className="border-t border-border bg-card/50 backdrop-blur-sm">
-                <div className="max-w-3xl mx-auto px-4 py-4">
+                <div className="max-w-3xl mx-auto px-4 py-4 relative">
+                    <SlashCommands
+                        input={input}
+                        onSelect={(prefix) => setInput(prefix)}
+                    />
                     <div className="flex gap-3 items-end">
                         <div className="flex-1 relative">
                             <AutoComplete
@@ -478,9 +487,12 @@ export default function ChatPage() {
                             )}
                         </Button>
                     </div>
-                    <p className="text-center text-xs text-muted-foreground mt-3">
-                        Tip: Correct me to teach preferences • <kbd className="px-1 py-0.5 bg-muted rounded text-[10px] font-mono">⌘K</kbd> for commands
-                    </p>
+                    <div className="flex items-center justify-between mt-2">
+                        <p className="text-xs text-muted-foreground">
+                            Tip: Correct me to teach preferences • <kbd className="px-1 py-0.5 bg-muted rounded text-[10px] font-mono">⌘K</kbd> for commands • Type <kbd className="px-1 py-0.5 bg-muted rounded text-[10px] font-mono">/</kbd> for quick commands
+                        </p>
+                        <TypingSpeed isTyping={input.length > 0} />
+                    </div>
                 </div>
             </div>
         </div>
