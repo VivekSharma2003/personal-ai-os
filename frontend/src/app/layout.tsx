@@ -12,6 +12,8 @@ import { AccentPicker } from '@/components/ui/AccentPicker';
 import { Scratchpad } from '@/components/ui/Scratchpad';
 import { SnippetLibrary } from '@/components/ui/SnippetSaver';
 import { PomodoroTimer } from '@/components/ui/PomodoroTimer';
+import { AmbientSounds } from '@/components/ui/AmbientSounds';
+import { ChatBackground } from '@/components/ui/ChatBackground';
 import { FocusModeProvider } from '@/components/layout/FocusMode';
 import { StatusBar } from '@/components/layout/StatusBar';
 
@@ -49,6 +51,8 @@ export default function RootLayout({
                         <Scratchpad />
                         <SnippetLibrary />
                         <PomodoroTimer />
+                        <AmbientSounds />
+                        <ChatBackground />
                         <Toaster />
                     </FocusModeProvider>
                 </ThemeProvider>
