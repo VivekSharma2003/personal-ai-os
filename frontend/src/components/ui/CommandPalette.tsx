@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap, Palette, StickyNote, Scissors, Timer } from 'lucide-react';
+import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap, Palette, StickyNote, Scissors, Timer, Volume2, Wallpaper } from 'lucide-react';
 import { useTheme } from '@/components/layout/ThemeProvider';
 import { cn } from '@/lib/utils';
 
@@ -186,6 +186,27 @@ export function CommandPalette() {
             },
             shortcut: '⌘P',
             category: 'Tools',
+        },
+        {
+            id: 'ambient-sounds',
+            label: 'Toggle Ambient Sounds',
+            description: 'Background sounds for focus',
+            icon: Volume2,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-ambient'));
+            },
+            shortcut: '⌘M',
+            category: 'Tools',
+        },
+        {
+            id: 'chat-background',
+            label: 'Change Chat Background',
+            description: 'Customize chat area pattern',
+            icon: Wallpaper,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-chat-bg'));
+            },
+            category: 'Settings',
         },
     ];
 
