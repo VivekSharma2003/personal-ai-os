@@ -98,6 +98,7 @@ Lightweight semantic memory:
 | **Accent Color Picker** | 8 preset accent colors, live preview | `⌘K` → "Accent" |
 | **Animated Status Bar** | Backend health indicator + active rules + last sync | — |
 | **Interactive Onboarding Tour** | SVG spotlight-guided tour for new users | `⌘K` → "Tour" |
+| **Chat Background Themes** | 6 CSS-only patterns (Dots, Grid, Gradient, Diagonal) | `⌘K` → "Background" |
 
 #### 💬 Chat
 | Feature | Description | Shortcut |
@@ -116,6 +117,9 @@ Lightweight semantic memory:
 | **AI Persona Switcher** | Switch between Creative, Technical, Concise, Professional | Header dropdown |
 | **Share Cards** | Generate beautiful gradient cards from messages | Share button |
 | **Inline Auto-Complete** | Ghost text suggestions, press Tab to accept | `Tab` |
+| **Conversation Summary** | One-click bullet-point summary of chat | Header button |
+| **Slash Commands** | `/summarize`, `/translate`, `/bullet`, `/eli5`, `/code` + more | Type `/` |
+| **Typing Speed (WPM)** | Live words-per-minute indicator while typing | Auto |
 
 #### 🛠️ Productivity
 | Feature | Description | Shortcut |
@@ -126,6 +130,7 @@ Lightweight semantic memory:
 | **Spotlight Search** | Fuzzy search past conversations | `⌘⇧F` |
 | **Keyboard Shortcuts Sheet** | View all available shortcuts | `⌘/` |
 | **Pomodoro Timer** | 25/5 focus timer with progress ring and audio alert | `⌘P` |
+| **Ambient Sounds** | Rain, Café, White Noise, Fireplace via Web Audio API | `⌘M` |
 
 #### 📊 Insights & Organization
 | Feature | Description | Shortcut |
