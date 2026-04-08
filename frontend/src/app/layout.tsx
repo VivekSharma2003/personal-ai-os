@@ -14,6 +14,9 @@ import { SnippetLibrary } from '@/components/ui/SnippetSaver';
 import { PomodoroTimer } from '@/components/ui/PomodoroTimer';
 import { AmbientSounds } from '@/components/ui/AmbientSounds';
 import { ChatBackground } from '@/components/ui/ChatBackground';
+import { MoodJournal } from '@/components/ui/MoodJournal';
+import { Pinboard } from '@/components/ui/Pinboard';
+import { DailyStreak } from '@/components/ui/DailyStreak';
 import { FocusModeProvider } from '@/components/layout/FocusMode';
 import { StatusBar } from '@/components/layout/StatusBar';
 
@@ -53,6 +56,9 @@ export default function RootLayout({
                         <PomodoroTimer />
                         <AmbientSounds />
                         <ChatBackground />
+                        <MoodJournal />
+                        <Pinboard />
+                        <DailyStreak />
                         <Toaster />
                     </FocusModeProvider>
                 </ThemeProvider>
