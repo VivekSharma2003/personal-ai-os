@@ -22,11 +22,22 @@ import { ConversationSummary } from '@/components/ui/ConversationSummary';
 import { SlashCommands } from '@/components/ui/SlashCommands';
 import { useChatBackground } from '@/components/ui/ChatBackground';
 import { TypingSpeed } from '@/components/ui/TypingSpeed';
+import { RatingButtons, SatisfactionIndicator } from '@/components/ui/ResponseRating';
+import { usePinboard } from '@/components/ui/Pinboard';
 import { useToast } from '@/hooks/use-toast';
 import { useConversations } from '@/hooks/useConversations';
 import { useFocusMode } from '@/components/layout/FocusMode';
 import { api, ChatResponse, FeedbackResponse } from '@/lib/api';
 import { cn, generateId } from '@/lib/utils';
+
+// Time-aware greeting logic
+function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return { text: 'Good Morning', emoji: '☀️', gradient: 'from-amber-400 via-orange-400 to-rose-400', bg: 'from-amber-500/10 to-orange-500/10' };
+    if (hour >= 12 && hour < 17) return { text: 'Good Afternoon', emoji: '🌤️', gradient: 'from-sky-400 via-blue-400 to-indigo-400', bg: 'from-sky-500/10 to-blue-500/10' };
+    if (hour >= 17 && hour < 21) return { text: 'Good Evening', emoji: '🌅', gradient: 'from-violet-400 via-purple-400 to-fuchsia-400', bg: 'from-violet-500/10 to-purple-500/10' };
+    return { text: 'Good Night', emoji: '🌙', gradient: 'from-indigo-400 via-blue-500 to-slate-500', bg: 'from-indigo-500/10 to-slate-500/10' };
+}
 
 interface Message {
     id: string;
@@ -137,6 +148,11 @@ function AssistantMessage({
                     </button>
                 </div>
             </div>
+
+            {/* Rating */}
+            <div className="mt-2">
+                <RatingButtons messageId={message.id} />
+            </div>
         </div>
     );
 }
@@ -153,8 +169,10 @@ export default function ChatPage() {
     const { toast } = useToast();
     const conversationId = useRef(generateId());
     const sessionStart = useRef(Date.now());
-    const { saveConversation, loadConversation, setActive, activeId, loaded } = useConversations();
+    const { saveConversation, loadConversation, setActive, activeId, loaded, conversations } = useConversations();
     const { focusMode } = useFocusMode();
+    const { pinMessage } = usePinboard();
+    const greeting = getGreeting();
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -290,6 +308,7 @@ export default function ChatPage() {
                     <kbd className="hidden sm:flex items-center gap-1 px-2 py-1 bg-muted rounded-md text-xs text-muted-foreground font-mono">
                         ⌘K
                     </kbd>
+                    <SatisfactionIndicator />
                     <PersonaSwitcher />
                     <ConversationSummary messages={messages} />
                     <ChatExport messages={messages} />
@@ -308,14 +327,34 @@ export default function ChatPage() {
                 <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
                     {messages.length === 0 && (
                         <div className="flex flex-col items-center justify-center h-[60vh] text-center">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-emerald-500/20 flex items-center justify-center mb-5 shadow-glow">
-                                <Sparkles className="w-8 h-8 text-primary" />
+                            {/* Dynamic Greeting */}
+                            <div className={cn('w-20 h-20 rounded-3xl bg-gradient-to-br flex items-center justify-center mb-6 shadow-lg', greeting.bg)} style={{ animation: 'greetingPulse 3s ease-in-out infinite' }}>
+                                <span className="text-4xl" style={{ animation: 'greetingEmoji 2s ease-in-out infinite alternate' }}>{greeting.emoji}</span>
                             </div>
-                            <h2 className="text-xl font-semibold text-foreground mb-2">Start a conversation</h2>
-                            <p className="text-muted-foreground max-w-sm text-sm leading-relaxed">
-                                I learn from your corrections. Tell me what you prefer, and I'll remember for next time.
+                            <h2 className="text-2xl font-bold mb-1">
+                                <span className={cn('bg-clip-text text-transparent bg-gradient-to-r', greeting.gradient)} style={{ animation: 'greetingGradient 4s ease infinite', backgroundSize: '200% 200%' }}>
+                                    {greeting.text}
+                                </span>
+                            </h2>
+                            <p className="text-muted-foreground max-w-sm text-sm leading-relaxed mb-2">
+                                I learn from your corrections. Tell me what you prefer, and I&apos;ll remember for next time.
                             </p>
-                            <div className="mt-8 flex flex-wrap justify-center gap-2">
+
+                            {/* Quick Stats */}
+                            <div className="flex items-center gap-4 mt-4 mb-6">
+                                {[
+                                    { label: 'Conversations', value: conversations.length.toString(), icon: '💬' },
+                                    { label: 'Streak', value: (() => { try { const d = JSON.parse(localStorage.getItem('ai-os-streak-data') || '{}'); return (d.currentStreak || 0).toString(); } catch { return '0'; } })(), icon: '🔥' },
+                                ].map(stat => (
+                                    <div key={stat.label} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary/50 border border-border/50" style={{ animation: 'greetingStatIn 500ms ease-out backwards', animationDelay: '200ms' }}>
+                                        <span className="text-sm">{stat.icon}</span>
+                                        <span className="text-sm font-bold text-foreground tabular-nums">{stat.value}</span>
+                                        <span className="text-[10px] text-muted-foreground">{stat.label}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-4 flex flex-wrap justify-center gap-2">
                                 {[
                                     { text: 'Explain something', emoji: '💡' },
                                     { text: 'Write for me', emoji: '✍️' },
@@ -335,7 +374,7 @@ export default function ChatPage() {
                                 ))}
                             </div>
                             <p className="mt-6 text-xs text-muted-foreground/60">
-                                Press <kbd className="px-1 py-0.5 bg-muted rounded text-[10px] font-mono">⌘K</kbd> for command palette
+                                Press <kbd className="px-1 py-0.5 bg-muted rounded text-[10px] font-mono">⌘K</kbd> for command palette · <kbd className="px-1 py-0.5 bg-muted rounded text-[10px] font-mono">⌘E</kbd> mood · <kbd className="px-1 py-0.5 bg-muted rounded text-[10px] font-mono">⌘B</kbd> pinboard
                             </p>
                         </div>
                     )}
@@ -407,7 +446,18 @@ export default function ChatPage() {
                                     </div>
                                 )}
 
-                                <MessageReactions messageId={message.id} />
+                                <div className="flex items-center justify-between">
+                                    <MessageReactions messageId={message.id} />
+                                    {message.role === 'assistant' && (
+                                        <button
+                                            onClick={() => pinMessage(message.content)}
+                                            className="opacity-0 group-hover:opacity-100 p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-primary transition-smooth text-[10px]"
+                                            title="Pin to board"
+                                        >
+                                            📌
+                                        </button>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Smart Suggestions after latest assistant message */}
