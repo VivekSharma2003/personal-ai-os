@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap, Palette, StickyNote, Scissors, Timer, Volume2, Wallpaper } from 'lucide-react';
+import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap, Palette, StickyNote, Scissors, Timer, Volume2, Wallpaper, Heart, Flame, Pin } from 'lucide-react';
 import { useTheme } from '@/components/layout/ThemeProvider';
 import { cn } from '@/lib/utils';
 
@@ -207,6 +207,38 @@ export function CommandPalette() {
                 window.dispatchEvent(new CustomEvent('ai-os:open-chat-bg'));
             },
             category: 'Settings',
+        },
+        {
+            id: 'mood-journal',
+            label: 'Mood Journal',
+            description: 'Track how you\'re feeling',
+            icon: Heart,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-mood'));
+            },
+            shortcut: '⌘E',
+            category: 'Tools',
+        },
+        {
+            id: 'daily-streak',
+            label: 'View Daily Streak',
+            description: 'See your usage streak and heatmap',
+            icon: Flame,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-streak'));
+            },
+            category: 'Tools',
+        },
+        {
+            id: 'open-pinboard',
+            label: 'Open Pinboard',
+            description: 'View pinned messages and notes',
+            icon: Pin,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-pinboard'));
+            },
+            shortcut: '⌘B',
+            category: 'Tools',
         },
     ];
 
