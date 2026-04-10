@@ -22,6 +22,7 @@ import { ThemeToggle } from './ThemeToggle';
 import { useConversations } from '@/hooks/useConversations';
 import { NotificationCenter } from '@/components/ui/NotificationCenter';
 import { TagDot, TagPicker } from '@/components/ui/ConversationTags';
+import { StreakBadge } from '@/components/ui/DailyStreak';
 
 const navItems = [
     { href: '/', label: 'Chat', icon: MessageSquare, description: 'Talk with AI' },
@@ -232,6 +233,7 @@ export function Sidebar() {
                 <div className={cn('flex items-center', collapsed ? 'flex-col gap-2' : 'gap-2 px-1')}>
                     <ThemeToggle />
                     <NotificationCenter />
+                    <StreakBadge />
                     <button
                         onClick={toggleCollapsed}
                         className={cn(
