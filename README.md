@@ -99,6 +99,7 @@ Lightweight semantic memory:
 | **Animated Status Bar** | Backend health indicator + active rules + last sync | — |
 | **Interactive Onboarding Tour** | SVG spotlight-guided tour for new users | `⌘K` → "Tour" |
 | **Chat Background Themes** | 6 CSS-only patterns (Dots, Grid, Gradient, Diagonal) | `⌘K` → "Background" |
+| **Dynamic Greeting Banner** | Time-aware animated greeting with usage stats and gradient text | — |
 
 #### 💬 Chat
 | Feature | Description | Shortcut |
@@ -120,6 +121,8 @@ Lightweight semantic memory:
 | **Conversation Summary** | One-click bullet-point summary of chat | Header button |
 | **Slash Commands** | `/summarize`, `/translate`, `/bullet`, `/eli5`, `/code` + more | Type `/` |
 | **Typing Speed (WPM)** | Live words-per-minute indicator while typing | Auto |
+| **AI Response Rating** | 👍👎 with feedback tags and satisfaction sparkline trends | Hover message |
+| **Pin to Board** | Pin any AI response to draggable pinboard canvas | Hover message |
 
 #### 🛠️ Productivity
 | Feature | Description | Shortcut |
@@ -131,6 +134,9 @@ Lightweight semantic memory:
 | **Keyboard Shortcuts Sheet** | View all available shortcuts | `⌘/` |
 | **Pomodoro Timer** | 25/5 focus timer with progress ring and audio alert | `⌘P` |
 | **Ambient Sounds** | Rain, Café, White Noise, Fireplace via Web Audio API | `⌘M` |
+| **Mood Journal** | Track daily emotions with sparkline chart over 7 days | `⌘E` |
+| **Message Pinboard** | Draggable sticky-note canvas with color coding | `⌘B` |
+| **Daily Streak Counter** | GitHub-style heatmap with milestone badges | Sidebar 🔥 |
 
 #### 📊 Insights & Organization
 | Feature | Description | Shortcut |
@@ -279,7 +285,11 @@ AI OS/
         │   │   ├── ChatStats.tsx           # Chat metrics
         │   │   ├── Scratchpad.tsx          # Quick notes
         │   │   ├── SnippetSaver.tsx        # Code snippet library
-        │   │   └── NotificationCenter.tsx  # Bell notifications
+        │   │   ├── NotificationCenter.tsx  # Bell notifications
+        │   │   ├── MoodJournal.tsx         # ⌘E mood tracker
+        │   │   ├── DailyStreak.tsx         # 🔥 streak heatmap
+        │   │   ├── Pinboard.tsx            # ⌘B sticky notes
+        │   │   └── ResponseRating.tsx      # 👍👎 rating system
         │   └── layout/
         │       ├── Sidebar.tsx    # Collapsible sidebar
         │       ├── FocusMode.tsx  # ⌘. focus mode
