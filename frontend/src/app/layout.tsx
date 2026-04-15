@@ -17,6 +17,10 @@ import { ChatBackground } from '@/components/ui/ChatBackground';
 import { MoodJournal } from '@/components/ui/MoodJournal';
 import { Pinboard } from '@/components/ui/Pinboard';
 import { DailyStreak } from '@/components/ui/DailyStreak';
+import { Achievements } from '@/components/ui/Achievements';
+import { WordCloud } from '@/components/ui/WordCloud';
+import { FocusSession } from '@/components/ui/FocusSession';
+import { QuickActionsFab } from '@/components/ui/QuickActionsFab';
 import { FocusModeProvider } from '@/components/layout/FocusMode';
 import { StatusBar } from '@/components/layout/StatusBar';
 
@@ -59,6 +63,10 @@ export default function RootLayout({
                         <MoodJournal />
                         <Pinboard />
                         <DailyStreak />
+                        <Achievements />
+                        <WordCloud />
+                        <FocusSession />
+                        <QuickActionsFab />
                         <Toaster />
                     </FocusModeProvider>
                 </ThemeProvider>

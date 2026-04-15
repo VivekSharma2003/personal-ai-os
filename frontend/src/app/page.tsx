@@ -24,6 +24,8 @@ import { useChatBackground } from '@/components/ui/ChatBackground';
 import { TypingSpeed } from '@/components/ui/TypingSpeed';
 import { RatingButtons, SatisfactionIndicator } from '@/components/ui/ResponseRating';
 import { usePinboard } from '@/components/ui/Pinboard';
+import { TranslateButton } from '@/components/ui/QuickTranslate';
+import { useAchievements } from '@/components/ui/Achievements';
 import { useToast } from '@/hooks/use-toast';
 import { useConversations } from '@/hooks/useConversations';
 import { useFocusMode } from '@/components/layout/FocusMode';
@@ -128,6 +130,7 @@ function AssistantMessage({
                     {message.role === 'assistant' && (
                         <ReadAloud content={message.content} />
                     )}
+                    <TranslateButton content={message.content} />
                     <ShareCardButton content={message.content} role={message.role} />
                     <button
                         onClick={handleCopy}
@@ -172,6 +175,7 @@ export default function ChatPage() {
     const { saveConversation, loadConversation, setActive, activeId, loaded, conversations } = useConversations();
     const { focusMode } = useFocusMode();
     const { pinMessage } = usePinboard();
+    const { checkAndUnlock } = useAchievements();
     const greeting = getGreeting();
 
     useEffect(() => {
@@ -247,6 +251,9 @@ export default function ChatPage() {
 
             setLatestAssistantId(assistantMessage.id);
             setMessages((prev) => [...prev, assistantMessage]);
+
+            // Check achievements after new message
+            setTimeout(() => checkAndUnlock(), 500);
         } catch (error) {
             toast({
                 title: 'Error',

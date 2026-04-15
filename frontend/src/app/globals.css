@@ -277,3 +277,34 @@ html.light {
 .animate-slide-up {
   animation: slide-up 200ms ease-out;
 }
+
+/* Achievement unlock particle animation */
+@keyframes achieveParticle {
+  0% { transform: scale(1) translateY(0); opacity: 1; }
+  50% { transform: scale(1.5) translateY(-15px); opacity: 0.8; }
+  100% { transform: scale(0) translateY(-30px); opacity: 0; }
+}
+
+@keyframes achieveBounce {
+  from { transform: scale(0) rotate(-15deg); opacity: 0; }
+  to { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Word cloud float animation */
+@keyframes wordFloat {
+  0% { transform: translate(-50%, -50%) translateY(0); }
+  100% { transform: translate(-50%, -50%) translateY(-8px); }
+}
+
+/* Focus session progress ring pulse */
+@keyframes focusRingPulse {
+  0%, 100% { filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.3)); }
+  50% { filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)); }
+}
+
+/* FAB button spring animations */
+@keyframes fabSpring {
+  0% { transform: scale(0) rotate(-180deg); }
+  60% { transform: scale(1.2) rotate(10deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}

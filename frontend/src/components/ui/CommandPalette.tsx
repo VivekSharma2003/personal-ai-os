@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap, Palette, StickyNote, Scissors, Timer, Volume2, Wallpaper, Heart, Flame, Pin } from 'lucide-react';
+import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap, Palette, StickyNote, Scissors, Timer, Volume2, Wallpaper, Heart, Flame, Pin, Trophy, Cloud, Target } from 'lucide-react';
 import { useTheme } from '@/components/layout/ThemeProvider';
 import { cn } from '@/lib/utils';
 
@@ -238,6 +238,36 @@ export function CommandPalette() {
                 window.dispatchEvent(new CustomEvent('ai-os:open-pinboard'));
             },
             shortcut: '⌘B',
+            category: 'Tools',
+        },
+        {
+            id: 'view-achievements',
+            label: 'View Achievements',
+            description: 'Open your trophy case',
+            icon: Trophy,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-achievements'));
+            },
+            category: 'Tools',
+        },
+        {
+            id: 'word-cloud',
+            label: 'View Word Cloud',
+            description: 'See your most-used words visualized',
+            icon: Cloud,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-wordcloud'));
+            },
+            category: 'Tools',
+        },
+        {
+            id: 'focus-session',
+            label: 'Start Focus Session',
+            description: 'Deep work timer with break reminders',
+            icon: Target,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-focus-session'));
+            },
             category: 'Tools',
         },
     ];
