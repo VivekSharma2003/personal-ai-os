@@ -137,6 +137,11 @@ Lightweight semantic memory:
 | **Mood Journal** | Track daily emotions with sparkline chart over 7 days | `⌘E` |
 | **Message Pinboard** | Draggable sticky-note canvas with color coding | `⌘B` |
 | **Daily Streak Counter** | GitHub-style heatmap with milestone badges | Sidebar 🔥 |
+| **🏆 Achievements & Badges** | 15 unlockable badges (Bronze→Platinum) with trophy case | `⌘K` → "Achievements" |
+| **🌐 Quick Translate** | One-click translation of AI responses to 8 languages | Globe icon |
+| **☁️ Word Cloud** | Interactive word frequency visualization from chat history | `⌘K` → "Word Cloud" |
+| **⏳ Focus Session Timer** | Configurable deep work timer (15/25/45/60m) with SVG ring | `⌘K` → "Focus" |
+| **🎯 Quick Actions FAB** | Floating radial menu for quick tool access | Bottom-right ⊕ |
 
 #### 📊 Insights & Organization
 | Feature | Description | Shortcut |
@@ -157,6 +162,11 @@ Lightweight semantic memory:
 | DELETE | `/api/rules/{id}` | Delete a rule |
 | POST | `/api/rules/{id}/toggle` | Toggle rule active/disabled |
 | GET | `/api/audit` | Get audit log events |
+| GET | `/api/analytics` | Aggregated usage statistics (totals, daily activity, category breakdown) |
+| GET | `/api/search` | Full-text search across conversations with snippets |
+| GET | `/api/suggestions` | AI-powered rule suggestions from interaction patterns |
+| POST | `/api/summarize` | LLM-powered conversation summary with topics & action items |
+| GET | `/api/export` | Full data export (rules, conversations, audit) as JSON |
 
 ## Quick Start
 
@@ -238,7 +248,7 @@ AI OS/
 ├── backend/
 │   ├── app/
 │   │   ├── api/
-│   │   │   ├── routes/          # API endpoints
+│   │   │   ├── routes/          # API endpoints (chat, feedback, rules, analytics, search, suggestions, summarize, export)
 │   │   │   └── schemas/         # Pydantic models
 │   │   ├── core/
 │   │   │   ├── llm.py           # Multi-provider LLM client (OpenAI/Gemini/Anthropic)
@@ -249,6 +259,8 @@ AI OS/
 │   │   │   ├── interaction.py   # Main orchestration
 │   │   │   ├── rule_engine.py   # Rule CRUD + ranking
 │   │   │   ├── memory.py        # Vector search
+│   │   │   ├── analytics.py     # Usage statistics aggregation
+│   │   │   ├── suggestions.py   # AI-powered rule suggestions
 │   │   │   └── prompt_builder.py
 │   │   ├── models/              # SQLAlchemy models
 │   │   ├── db/                  # Database connections
@@ -289,7 +301,12 @@ AI OS/
         │   │   ├── MoodJournal.tsx         # ⌘E mood tracker
         │   │   ├── DailyStreak.tsx         # 🔥 streak heatmap
         │   │   ├── Pinboard.tsx            # ⌘B sticky notes
-        │   │   └── ResponseRating.tsx      # 👍👎 rating system
+        │   │   ├── ResponseRating.tsx      # 👍👎 rating system
+        │   │   ├── Achievements.tsx        # 🏆 gamification badges
+        │   │   ├── QuickTranslate.tsx      # 🌐 one-click translation
+        │   │   ├── WordCloud.tsx           # ☁️ word frequency cloud
+        │   │   ├── FocusSession.tsx        # ⏳ deep work timer
+        │   │   └── QuickActionsFab.tsx     # 🎯 floating action menu
         │   └── layout/
         │       ├── Sidebar.tsx    # Collapsible sidebar
         │       ├── FocusMode.tsx  # ⌘. focus mode

@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.api.routes import chat, feedback, rules
+from app.api.routes import chat, feedback, rules, analytics, search, suggestions, summarize, export
 from app.db.session import init_db, close_db
 from app.db.redis import init_redis, close_redis
 from app.db.vector import init_vector_db
@@ -53,6 +53,11 @@ app.add_middleware(
 app.include_router(chat.router, prefix="/api", tags=["chat"])
 app.include_router(feedback.router, prefix="/api", tags=["feedback"])
 app.include_router(rules.router, prefix="/api", tags=["rules"])
+app.include_router(analytics.router, prefix="/api", tags=["analytics"])
+app.include_router(search.router, prefix="/api", tags=["search"])
+app.include_router(suggestions.router, prefix="/api", tags=["suggestions"])
+app.include_router(summarize.router, prefix="/api", tags=["summarize"])
+app.include_router(export.router, prefix="/api", tags=["export"])
 
 
 @app.get("/health")
