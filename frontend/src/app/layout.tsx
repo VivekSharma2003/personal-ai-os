@@ -21,6 +21,11 @@ import { Achievements } from '@/components/ui/Achievements';
 import { WordCloud } from '@/components/ui/WordCloud';
 import { FocusSession } from '@/components/ui/FocusSession';
 import { QuickActionsFab } from '@/components/ui/QuickActionsFab';
+import { Flashcards } from '@/components/ui/Flashcards';
+import { HabitTracker } from '@/components/ui/HabitTracker';
+import { ReadingList } from '@/components/ui/ReadingList';
+import { BreathingExercise } from '@/components/ui/BreathingExercise';
+import { ProgressDashboard } from '@/components/ui/ProgressDashboard';
 import { FocusModeProvider } from '@/components/layout/FocusMode';
 import { StatusBar } from '@/components/layout/StatusBar';
 
@@ -67,6 +72,11 @@ export default function RootLayout({
                         <WordCloud />
                         <FocusSession />
                         <QuickActionsFab />
+                        <Flashcards />
+                        <HabitTracker />
+                        <ReadingList />
+                        <BreathingExercise />
+                        <ProgressDashboard />
                         <Toaster />
                     </FocusModeProvider>
                 </ThemeProvider>
