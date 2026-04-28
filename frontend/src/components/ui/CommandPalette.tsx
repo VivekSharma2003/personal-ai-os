@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap, Palette, StickyNote, Scissors, Timer, Volume2, Wallpaper, Heart, Flame, Pin, Trophy, Cloud, Target } from 'lucide-react';
+import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap, Palette, StickyNote, Scissors, Timer, Volume2, Wallpaper, Heart, Flame, Pin, Trophy, Cloud, Target, Wind, TrendingUp, BookmarkPlus } from 'lucide-react';
 import { useTheme } from '@/components/layout/ThemeProvider';
 import { cn } from '@/lib/utils';
 
@@ -267,6 +267,56 @@ export function CommandPalette() {
             icon: Target,
             action: () => {
                 window.dispatchEvent(new CustomEvent('ai-os:open-focus-session'));
+            },
+            category: 'Tools',
+        },
+        {
+            id: 'flashcards',
+            label: 'Flashcards',
+            description: 'Study flashcards with spaced repetition',
+            icon: BookOpen,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-flashcards'));
+            },
+            category: 'Tools',
+        },
+        {
+            id: 'habits',
+            label: 'Habit Tracker',
+            description: 'Track your daily habits',
+            icon: Target,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-habits'));
+            },
+            category: 'Tools',
+        },
+        {
+            id: 'reading-list',
+            label: 'Reading List',
+            description: 'Save and manage bookmarks and resources',
+            icon: BookmarkPlus,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-reading-list'));
+            },
+            category: 'Tools',
+        },
+        {
+            id: 'breathing',
+            label: 'Breathing Exercise',
+            description: 'Guided breathing for focus and calm',
+            icon: Wind,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-breathing'));
+            },
+            category: 'Tools',
+        },
+        {
+            id: 'progress',
+            label: 'Your Progress',
+            description: 'XP, levels, and aggregated stats',
+            icon: TrendingUp,
+            action: () => {
+                window.dispatchEvent(new CustomEvent('ai-os:open-progress'));
             },
             category: 'Tools',
         },
