@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap, Palette, StickyNote, Scissors, Timer, Volume2, Wallpaper, Heart, Flame, Pin, Trophy, Cloud, Target, Wind, TrendingUp, BookmarkPlus } from 'lucide-react';
+import { Search, Command, MessageSquare, Sparkles, Sun, Moon, BookOpen, Clock, X, Brain, Eye, GraduationCap, Mic, Keyboard, Zap, Palette, StickyNote, Scissors, Timer, Volume2, Wallpaper, Heart, Flame, Pin, Trophy, Cloud, Target, Wind, TrendingUp, BookmarkPlus, Pencil, Quote, LayoutDashboard } from 'lucide-react';
 import { useTheme } from '@/components/layout/ThemeProvider';
 import { cn } from '@/lib/utils';
 
@@ -318,6 +318,38 @@ export function CommandPalette() {
             action: () => {
                 window.dispatchEvent(new CustomEvent('ai-os:open-progress'));
             },
+            category: 'Tools',
+        },
+        {
+            id: 'voice-notes',
+            label: 'Voice Notes',
+            description: 'Record and play back voice memos',
+            icon: Mic,
+            action: () => { window.dispatchEvent(new CustomEvent('ai-os:open-voice-notes')); },
+            category: 'Tools',
+        },
+        {
+            id: 'whiteboard',
+            label: 'Whiteboard',
+            description: 'Draw and sketch ideas',
+            icon: Pencil,
+            action: () => { window.dispatchEvent(new CustomEvent('ai-os:open-whiteboard')); },
+            category: 'Tools',
+        },
+        {
+            id: 'daily-quote',
+            label: 'Daily Quote',
+            description: 'Get inspired with a motivational quote',
+            icon: Quote,
+            action: () => { window.dispatchEvent(new CustomEvent('ai-os:open-quotes')); },
+            category: 'Tools',
+        },
+        {
+            id: 'kanban',
+            label: 'Kanban Board',
+            description: 'Organize tasks in To Do / Doing / Done',
+            icon: LayoutDashboard,
+            action: () => { window.dispatchEvent(new CustomEvent('ai-os:open-kanban')); },
             category: 'Tools',
         },
     ];
