@@ -26,6 +26,10 @@ import { HabitTracker } from '@/components/ui/HabitTracker';
 import { ReadingList } from '@/components/ui/ReadingList';
 import { BreathingExercise } from '@/components/ui/BreathingExercise';
 import { ProgressDashboard } from '@/components/ui/ProgressDashboard';
+import { VoiceNotes } from '@/components/ui/VoiceNotes';
+import { Whiteboard } from '@/components/ui/Whiteboard';
+import { DailyQuote } from '@/components/ui/DailyQuote';
+import { KanbanBoard } from '@/components/ui/KanbanBoard';
 import { FocusModeProvider } from '@/components/layout/FocusMode';
 import { StatusBar } from '@/components/layout/StatusBar';
 
@@ -77,6 +81,10 @@ export default function RootLayout({
                         <ReadingList />
                         <BreathingExercise />
                         <ProgressDashboard />
+                        <VoiceNotes />
+                        <Whiteboard />
+                        <DailyQuote />
+                        <KanbanBoard />
                         <Toaster />
                     </FocusModeProvider>
                 </ThemeProvider>
