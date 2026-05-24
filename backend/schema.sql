@@ -76,6 +76,105 @@ CREATE TABLE audit_logs (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Rule versions for history tracking
+CREATE TABLE rule_versions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    rule_id UUID REFERENCES rules(id) ON DELETE CASCADE,
+    version_number INTEGER NOT NULL,
+
+    -- Snapshot of rule state
+    content TEXT NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    confidence FLOAT NOT NULL,
+    status VARCHAR(20) NOT NULL,
+
+    -- Change metadata
+    changed_by VARCHAR(20) DEFAULT 'user',       -- user|system|decay|import
+    change_reason TEXT,
+
+    created_at TIMESTAMP DEFAULT NOW(),
+
+    UNIQUE(rule_id, version_number)
+);
+
+-- Rule conflicts
+CREATE TABLE rule_conflicts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    rule_a_id UUID REFERENCES rules(id) ON DELETE CASCADE,
+    rule_b_id UUID REFERENCES rules(id) ON DELETE CASCADE,
+
+    -- Conflict details
+    explanation TEXT NOT NULL,
+    severity FLOAT DEFAULT 0.5,
+    suggested_resolution VARCHAR(50) DEFAULT 'keep_both',
+
+    -- Status
+    status VARCHAR(20) DEFAULT 'active',          -- active|resolved|dismissed
+    resolved_at TIMESTAMP,
+    resolution_applied VARCHAR(50),
+    resolution_details JSONB DEFAULT '{}',
+
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Conversations as first-class entities
+CREATE TABLE conversations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+
+    title VARCHAR(500) DEFAULT 'New Conversation',
+    description TEXT,
+
+    -- Forking support
+    parent_id UUID REFERENCES conversations(id) ON DELETE SET NULL,
+    forked_at_interaction_id UUID REFERENCES interactions(id) ON DELETE SET NULL,
+
+    -- Status
+    is_archived BOOLEAN DEFAULT FALSE,
+    is_pinned BOOLEAN DEFAULT FALSE,
+
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Webhooks
+CREATE TABLE webhooks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+
+    url VARCHAR(2048) NOT NULL,
+    secret VARCHAR(255) NOT NULL,
+    description VARCHAR(500),
+
+    events TEXT[] DEFAULT '{}',
+    active BOOLEAN DEFAULT TRUE,
+    consecutive_failures INTEGER DEFAULT 0,
+
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Webhook delivery log
+CREATE TABLE webhook_deliveries (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    webhook_id UUID REFERENCES webhooks(id) ON DELETE CASCADE,
+
+    event_type VARCHAR(100) NOT NULL,
+    payload JSONB NOT NULL,
+
+    status_code INTEGER,
+    response_body TEXT,
+    error_message TEXT,
+
+    attempt_number INTEGER DEFAULT 1,
+    max_attempts INTEGER DEFAULT 3,
+    success BOOLEAN DEFAULT FALSE,
+
+    created_at TIMESTAMP DEFAULT NOW(),
+    delivered_at TIMESTAMP
+);
+
 -- Indexes for performance
 CREATE INDEX idx_rules_user_status ON rules(user_id, status);
 CREATE INDEX idx_rules_confidence ON rules(confidence DESC);
@@ -87,6 +186,17 @@ CREATE INDEX idx_audit_logs_user ON audit_logs(user_id);
 CREATE INDEX idx_audit_logs_rule ON audit_logs(rule_id);
 CREATE INDEX idx_audit_logs_type ON audit_logs(event_type);
 CREATE INDEX idx_audit_logs_created ON audit_logs(created_at DESC);
+
+-- New feature indexes
+CREATE INDEX idx_rule_versions_rule ON rule_versions(rule_id, version_number DESC);
+CREATE INDEX idx_rule_conflicts_user ON rule_conflicts(user_id, status);
+CREATE INDEX idx_rule_conflicts_rules ON rule_conflicts(rule_a_id, rule_b_id);
+CREATE INDEX idx_conversations_user ON conversations(user_id, is_archived, updated_at DESC);
+CREATE INDEX idx_conversations_parent ON conversations(parent_id);
+CREATE INDEX idx_webhooks_user ON webhooks(user_id, active);
+CREATE INDEX idx_webhook_deliveries_webhook ON webhook_deliveries(webhook_id, created_at DESC);
+CREATE INDEX idx_webhook_deliveries_failed ON webhook_deliveries(success, attempt_number)
+    WHERE success = FALSE;
 
 -- Trigger to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -106,3 +216,14 @@ CREATE TRIGGER update_rules_updated_at
     BEFORE UPDATE ON rules
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_conversations_updated_at
+    BEFORE UPDATE ON conversations
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_webhooks_updated_at
+    BEFORE UPDATE ON webhooks
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+

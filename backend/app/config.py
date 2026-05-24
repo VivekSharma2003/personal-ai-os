@@ -58,6 +58,13 @@ class Settings(BaseSettings):
     debug: bool = Field(default=True, alias="DEBUG")
     host: str = Field(default="0.0.0.0", alias="HOST")
     port: int = Field(default=8000, alias="PORT")
+
+    # Webhooks
+    webhook_timeout: int = Field(default=10, alias="WEBHOOK_TIMEOUT")
+    webhook_max_retries: int = Field(default=3, alias="WEBHOOK_MAX_RETRIES")
+
+    # Conflict Detection
+    conflict_scan_interval: int = Field(default=6, alias="CONFLICT_SCAN_INTERVAL_HOURS")
     
     class Config:
         env_file = ".env"
