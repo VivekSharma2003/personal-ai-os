@@ -18,6 +18,7 @@ from app.core.algorithms import (
     select_rules_for_prompt
 )
 from app.core.llm import generate_embedding
+from app.core.events import emit_event
 from app.db.redis import RuleCache
 from app.db.vector import add_embedding, search_similar
 
@@ -95,7 +96,15 @@ class RuleEngineService:
         
         # Invalidate cache
         await RuleCache.invalidate_user_rules(str(user_id))
-        
+
+        # Emit event
+        await emit_event("rule.created", {
+            "user_id": str(user_id),
+            "rule_id": str(rule.id),
+            "content": content,
+            "category": category,
+        })
+
         return rule
     
     async def get_rule(self, rule_id: UUID) -> Optional[Rule]:
@@ -198,10 +207,23 @@ class RuleEngineService:
         rule = await self.get_rule(rule_id)
         if not rule:
             return None
-        
+
+        # Create version snapshot BEFORE mutation
+        from app.services.versioning import VersioningService
+        versioning = VersioningService(self.db)
+        change_parts = []
+        if content and content != rule.content:
+            change_parts.append("content updated")
+        if status and status != rule.status:
+            change_parts.append(f"status → {status}")
+        if category and category != rule.category:
+            change_parts.append(f"category → {category}")
+        change_reason = ", ".join(change_parts) or "Rule updated"
+        await versioning.create_version(rule, change_reason=change_reason, changed_by="user")
+
         old_content = rule.content
         old_status = rule.status
-        
+
         if content:
             rule.content = content
             # Update embedding
@@ -212,15 +234,15 @@ class RuleEngineService:
                 rule.embedding_id = embedding_id
             except Exception:
                 pass
-        
+
         if status:
             rule.status = status
-        
+
         if category:
             rule.category = category
-        
+
         rule.updated_at = datetime.utcnow()
-        
+
         # Log the event
         await self._log_event(
             user_id=rule.user_id,
@@ -233,10 +255,17 @@ class RuleEngineService:
                 "new_status": status or old_status
             }
         )
-        
+
         # Invalidate cache
         await RuleCache.invalidate_user_rules(str(rule.user_id))
-        
+
+        # Emit event
+        await emit_event("rule.updated", {
+            "user_id": str(rule.user_id),
+            "rule_id": str(rule.id),
+            "changes": change_reason,
+        })
+
         return rule
     
     async def delete_rule(self, rule_id: UUID) -> bool:
@@ -297,7 +326,16 @@ class RuleEngineService:
         rule = await self.get_rule(rule_id)
         if not rule:
             return None
-        
+
+        # Create version snapshot before reinforcement
+        from app.services.versioning import VersioningService
+        versioning = VersioningService(self.db)
+        await versioning.create_version(
+            rule,
+            change_reason=f"Reinforced (count: {rule.times_reinforced + 1})",
+            changed_by="system"
+        )
+
         rule.times_reinforced += 1
         rule.last_reinforced_at = datetime.utcnow()
         rule.confidence = calculate_confidence(
@@ -306,16 +344,16 @@ class RuleEngineService:
             last_applied_at=rule.last_applied_at
         )
         rule.updated_at = datetime.utcnow()
-        
+
         await self._log_event(
             user_id=rule.user_id,
             rule_id=rule.id,
             event_type=AuditEventType.RULE_REINFORCED,
             event_data={"new_confidence": rule.confidence}
         )
-        
+
         await RuleCache.invalidate_user_rules(str(rule.user_id))
-        
+
         return rule
     
     async def mark_rule_applied(self, rule_id: UUID) -> Optional[Rule]:
