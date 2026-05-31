@@ -76,15 +76,15 @@ async def comprehensive_health(
     try:
         redis = get_redis()
         start = time.time()
-        await redis.ping()
+        await redis.ping()  # pyrefly: ignore
         redis_latency = round((time.time() - start) * 1000, 2)
 
         # Get memory info
-        info = await redis.info("memory")
+        info = await redis.info("memory")  # pyrefly: ignore
         memory_used = info.get("used_memory_human", "unknown")
 
         # Get key count
-        db_size = await redis.dbsize()
+        db_size = await redis.dbsize()  # pyrefly: ignore
 
         health["components"]["redis"] = {
             "status": "healthy",
@@ -239,7 +239,7 @@ async def readiness_probe(
 
         # Check Redis
         redis = get_redis()
-        await redis.ping()
+        await redis.ping()  # pyrefly: ignore
 
         return {"ready": True}
 

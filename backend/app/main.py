@@ -2,7 +2,9 @@
 Personal AI OS - Main FastAPI Application
 """
 from contextlib import asynccontextmanager
+# pyrefly: ignore [missing-import]
 from fastapi import FastAPI
+# pyrefly: ignore [missing-import]
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
