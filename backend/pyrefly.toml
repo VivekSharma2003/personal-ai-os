@@ -1,0 +1,3 @@
+python-interpreter-path = "/Users/VivekSharma/Desktop/AI OS/backend/path/to/venv/bin/python"
+search-path = ["."]
+preset = "basic"
