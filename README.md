@@ -19,7 +19,13 @@ Personal AI OS is a production-grade system that creates a personalized AI exper
 - **🧠 Automatic Rule Learning** - Detects corrections and extracts reusable rules
 - **⚡ Intelligent Rule Application** - Applies relevant rules without cluttering prompts
 - **📊 Confidence Scoring** - Rules gain/lose confidence based on usage
-- **🔍 Semantic Memory** - Vector search for context-aware rule matching
+- **⚔️ Rule Conflict Detection** - Auto-detects and resolves contradictory preferences
+- **⏳ Versioning & History** - Tracks rule modifications with differential logs and rollback
+- **📡 Server-Sent Events (SSE)** - Real-time token streaming with active rule broadcasts
+- **🔌 Webhook Event Bus** - Outbound HTTP event notifications signed with HMAC-SHA256 signatures
+- **🔱 Timeline Branching** - Fork conversations at any point to spawn new alternate timelines
+- **📦 Pre-Built Templates** - One-click category rule import with deduplication checks
+- **🔍 Semantic Memory** - Vector search (FAISS) for context-aware rule matching
 - **🎯 Full Transparency** - View, edit, and manage all learned preferences
 
 ## Architecture
@@ -85,6 +91,48 @@ Lightweight semantic memory:
 - Stores interaction embeddings in FAISS
 - Enables similarity search for ambiguous cases
 - Helps resolve borderline rule applications
+
+### Advanced Backend Services
+
+#### 1. Rule Conflict Detection Engine
+Automatically detects when user preferences contradict each other (e.g. "always use formal tone" vs "keep it casual").
+- Uses FAISS semantic embeddings for fast O(N) pre-filtering.
+- Invokes LLM analysis to determine conflict severity, explanation, and resolution strategies (merge, overwrite, keep newer/older, disable).
+- Runs on rule creation/updates and as a scheduled background job.
+
+#### 2. Rule Versioning & Rollback
+Maintains audit trail and historical integrity for all user preferences.
+- Captures an immutable rule version snapshot before any mutation (edit, reinforcement, or decay).
+- Supports listing revision timelines, viewing unified line-by-line diffs, and rolling back to any previous version.
+
+#### 3. Real-Time Chat Streaming (SSE)
+Delivers fluid, low-latency AI interactions via Server-Sent Events.
+- Streams token-by-token responses using async generators for OpenAI, Google Gemini, and Anthropic Claude.
+- Emits structured `rule_applied` packets at the start of the stream, followed by `token` events, and finishes with a metadata `done` packet.
+- Intercepts streaming lifecycle to automatically save interactions and mark rules as applied in the database post-stream.
+
+#### 4. Webhook & Event System
+Enables external integrations and event-driven architectures.
+- Internal `EventBus` decouples service modules by publishing event notifications (e.g. `rule.created`, `chat.completed`).
+- Dispatches event payloads to external HTTP webhooks signed with HMAC-SHA256 headers (`X-Webhook-Signature`).
+- Handles delivery failures using a background retry dispatcher queue with exponential backoff.
+
+#### 5. Conversation Branching
+Provides timeline fork capability.
+- Converts conversations into tree-like structures.
+- Allows users to fork a conversation at any previous interaction, cloning all messages up to that point into a new conversation thread while keeping the original intact.
+
+#### 6. Bulk Import & Template Packs
+Loads and merges large preference databases.
+- Performs schema validation and duplicate pre-filtering using semantic search.
+- Includes pre-built template JSON packs for *Professional Writing*, *Code Review*, and *Academic Style*.
+- Handles duplicate resolution using `skip_duplicates`, `merge` (confidence reinforce), or `overwrite` strategies.
+
+#### 7. Diagnostics & Monitoring
+Provides deep status monitoring of critical application resources.
+- Performs connectivity and latency checks for PostgreSQL, Redis, and FAISS.
+- Displays background scheduler state and job triggers.
+- Computes system resource statistics (CPU, memory, system uptime) using `psutil`.
 
 ### Frontend Features
 
@@ -156,11 +204,35 @@ Lightweight semantic memory:
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/api/chat` | Send a message and get AI response with rules applied |
+| POST | `/api/chat/stream` | Stream chat tokens real-time via Server-Sent Events (SSE) |
 | POST | `/api/feedback` | Submit correction to learn new rule |
 | GET | `/api/rules` | List all rules with filters |
 | PATCH | `/api/rules/{id}` | Update a rule |
 | DELETE | `/api/rules/{id}` | Delete a rule |
 | POST | `/api/rules/{id}/toggle` | Toggle rule active/disabled |
+| GET | `/api/rules/{id}/versions` | List version history for a rule |
+| POST | `/api/rules/{id}/rollback` | Rollback a rule to a specific version number |
+| GET | `/api/rules/{id}/versions/{v1}/diff/{v2}` | Get differential unified diff between two rule versions |
+| GET | `/api/conflicts` | List detected active rule conflicts |
+| POST | `/api/conflicts/{id}/resolve` | Resolve conflict with a chosen strategy |
+| POST | `/api/conflicts/scan` | Manually trigger a rule conflict scan |
+| POST | `/api/webhooks` | Register a new webhook delivery URL |
+| GET | `/api/webhooks` | List user's registered webhooks |
+| DELETE | `/api/webhooks/{id}` | Delete a registered webhook |
+| GET | `/api/webhooks/{id}/deliveries` | View webhook transmission delivery logs |
+| POST | `/api/webhooks/{id}/test` | Trigger a test event payload delivery |
+| GET | `/api/conversations` | List user's conversations and message counts |
+| POST | `/api/conversations` | Create a new conversation thread |
+| POST | `/api/conversations/{id}/fork` | Fork conversation timeline at a specific message |
+| GET | `/api/conversations/{id}/tree` | Get conversation branching tree structure |
+| PATCH | `/api/conversations/{id}` | Rename a conversation |
+| DELETE | `/api/conversations/{id}` | Delete a conversation and optionally cascade forks |
+| POST | `/api/rules/import/preview` | Preview duplicate check before executing import |
+| POST | `/api/rules/import` | Execute bulk rule import with merge/skip strategy |
+| GET | `/api/rules/templates` | List pre-built rule template packs |
+| GET | `/api/health` | Comprehensive health dashboard of databases, scheduler, and system resources |
+| GET | `/api/health/ready` | Readiness probe check (DB + Redis) |
+| GET | `/api/health/live` | Liveness probe check |
 | GET | `/api/audit` | Get audit log events |
 | GET | `/api/analytics` | Aggregated usage statistics (totals, daily activity, category breakdown) |
 | GET | `/api/search` | Full-text search across conversations with snippets |
@@ -248,23 +320,32 @@ AI OS/
 ├── backend/
 │   ├── app/
 │   │   ├── api/
-│   │   │   ├── routes/          # API endpoints (chat, feedback, rules, analytics, search, suggestions, summarize, export)
-│   │   │   └── schemas/         # Pydantic models
+│   │   │   ├── routes/          # API endpoints (chat, conflicts, versions, stream, webhooks, conversations, rule_import, health, feedback, rules, analytics, search, suggestions, summarize, export)
+│   │   │   └── schemas/         # Pydantic schemas (conflicts, versions, webhooks, conversations, rule_import, chat, feedback, rules, analytics, search, suggestions, summarize, export)
 │   │   ├── core/
 │   │   │   ├── llm.py           # Multi-provider LLM client (OpenAI/Gemini/Anthropic)
 │   │   │   ├── prompts.py       # Prompt templates
 │   │   │   ├── algorithms.py    # Confidence, decay, ranking
-│   │   │   └── extraction.py    # Rule extraction logic
+│   │   │   ├── extraction.py    # Rule extraction logic
+│   │   │   ├── conflict_detector.py # LLM-based pairwise conflict analysis
+│   │   │   ├── events.py        # Internal asynchronous EventBus singleton
+│   │   │   └── streaming.py     # SSE chunk streaming engine
 │   │   ├── services/
 │   │   │   ├── interaction.py   # Main orchestration
 │   │   │   ├── rule_engine.py   # Rule CRUD + ranking
 │   │   │   ├── memory.py        # Vector search
 │   │   │   ├── analytics.py     # Usage statistics aggregation
 │   │   │   ├── suggestions.py   # AI-powered rule suggestions
-│   │   │   └── prompt_builder.py
-│   │   ├── models/              # SQLAlchemy models
-│   │   ├── db/                  # Database connections
-│   │   └── jobs/                # Background tasks
+│   │   │   ├── prompt_builder.py
+│   │   │   ├── conflicts.py     # Conflict detection orchestration
+│   │   │   ├── versioning.py    # Rule history snapshotting and diffing
+│   │   │   ├── webhook_service.py # Webhook validation and delivery management
+│   │   │   ├── conversation_service.py # Fork tree and branch creation
+│   │   │   └── import_service.py # Bulk template imports with duplicate mitigation
+│   │   ├── models/              # SQLAlchemy models (user, rule, audit_log, rule_conflict, rule_version, conversation, webhook)
+│   │   ├── db/                  # Database connections (session, redis, vector)
+│   │   └── jobs/                # Background tasks (scheduler, decay_processor, rule_extractor, conflict_scanner, webhook_dispatcher)
+│   ├── tests/                   # Automated pytest suite (conftest, test_conflict_detector, test_conversations, test_imports, test_streaming, test_versioning, test_webhooks)
 │   ├── schema.sql
 │   └── requirements.txt
 │
