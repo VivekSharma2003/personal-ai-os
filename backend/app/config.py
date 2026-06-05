@@ -65,6 +65,11 @@ class Settings(BaseSettings):
 
     # Conflict Detection
     conflict_scan_interval: int = Field(default=6, alias="CONFLICT_SCAN_INTERVAL_HOURS")
+
+    # Rate Limiting
+    rate_limit_default: int = Field(default=60, alias="RATE_LIMIT_DEFAULT")
+    rate_limit_llm: int = Field(default=10, alias="RATE_LIMIT_LLM")
+    rate_limit_burst: int = Field(default=5, alias="RATE_LIMIT_BURST")
     
     class Config:
         env_file = ".env"
