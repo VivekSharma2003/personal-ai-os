@@ -117,7 +117,12 @@ async def _safe_call(handler: Callable, event_type: str, payload: dict):
         else:
             handler(event_type, payload)
     except Exception as e:
-        print(f"[EventBus] Handler error for '{event_type}': {e}")
+        from app.core.logging import get_logger
+        _logger = get_logger("app.events")
+        _logger.error(
+            f"Handler error for '{event_type}': {e}",
+            extra={"extra_data": {"event_type": event_type}},
+        )
 
 
 # Module-level convenience functions
