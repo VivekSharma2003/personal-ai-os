@@ -144,8 +144,24 @@ class RuleEngineService:
         return list(result.scalars().all())
     
     async def get_active_rules(self, user_id: UUID) -> List[Rule]:
-        """Get all active rules for a user."""
-        return await self.get_user_rules(user_id, status=RuleStatus.ACTIVE.value)
+        """Get all active rules for a user, respecting time-based schedules."""
+        rules = await self.get_user_rules(user_id, status=RuleStatus.ACTIVE.value)
+
+        if not rules:
+            return rules
+
+        # Filter by schedule windows
+        try:
+            from app.services.scheduling_service import SchedulingService
+            scheduling = SchedulingService(self.db)
+            rule_ids = [r.id for r in rules]
+            active_ids = await scheduling.get_active_rule_ids(rule_ids)
+            active_id_set = set(active_ids)
+            rules = [r for r in rules if r.id in active_id_set]
+        except Exception:
+            pass  # On error, return all rules (fail-open)
+
+        return rules
     
     async def get_rules_for_prompt(
         self,
