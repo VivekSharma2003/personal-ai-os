@@ -4,17 +4,14 @@ Personal AI OS - Rules API Routes
 from typing import Optional
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.schemas.rules import (
-    RuleCreate, RuleUpdate, RuleResponse, RulesListResponse,
-    AuditEventResponse, AuditLogResponse
+    RuleCreate, RuleUpdate, RuleResponse, RulesListResponse
 )
 from app.dependencies import get_db
 from app.services.rule_engine import RuleEngineService
 from app.models.rule import Rule, RuleStatus
-from app.models.audit_log import AuditLog
 
 
 router = APIRouter()
@@ -209,43 +206,4 @@ async def toggle_rule(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/audit", response_model=AuditLogResponse)
-async def get_audit_log(
-    user_id: str = Query(..., description="External user ID"),
-    rule_id: Optional[str] = Query(None, description="Filter by rule ID"),
-    event_type: Optional[str] = Query(None, description="Filter by event type"),
-    limit: int = Query(50, ge=1, le=100),
-    db: AsyncSession = Depends(get_db)
-):
-    """
-    Get audit log for a user with optional filters.
-    """
-    service = RuleEngineService(db)
-    
-    try:
-        user = await service.get_or_create_user(user_id)
-        
-        query = select(AuditLog).where(AuditLog.user_id == user.id)
-        
-        if rule_id:
-            query = query.where(AuditLog.rule_id == UUID(rule_id))
-        if event_type:
-            query = query.where(AuditLog.event_type == event_type)
-        
-        query = query.order_by(AuditLog.created_at.desc()).limit(limit)
-        
-        result = await db.execute(query)
-        events = result.scalars().all()
-        
-        return AuditLogResponse(
-            events=[AuditEventResponse(
-                id=str(e.id),
-                rule_id=str(e.rule_id) if e.rule_id else None,
-                event_type=e.event_type,
-                event_data=e.event_data or {},
-                created_at=e.created_at.isoformat() if e.created_at else ""
-            ) for e in events],
-            total=len(events)
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+
