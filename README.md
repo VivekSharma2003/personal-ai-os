@@ -26,6 +26,11 @@ Personal AI OS is a production-grade system that creates a personalized AI exper
 - **🔱 Timeline Branching** - Fork conversations at any point to spawn new alternate timelines
 - **📦 Pre-Built Templates** - One-click category rule import with deduplication checks
 - **🔍 Semantic Memory** - Vector search (FAISS) for context-aware rule matching
+- **🛡️ Rate Limiting** - Redis-backed sliding window API throttling with per-user quotas
+- **📋 Structured Logging** - JSON logs with X-Request-ID correlation for production tracing
+- **⏰ Rule Scheduling** - Time-aware rules that auto-activate on schedules or weekdays
+- **📜 Audit Trail API** - Paginated, filterable audit logs with stats and CSV export
+- **🏷️ Rule Tagging** - Flexible tag-based rule organization with bulk operations
 - **🎯 Full Transparency** - View, edit, and manage all learned preferences
 
 ## Architecture
@@ -134,6 +139,44 @@ Provides deep status monitoring of critical application resources.
 - Displays background scheduler state and job triggers.
 - Computes system resource statistics (CPU, memory, system uptime) using `psutil`.
 
+#### 8. Rate Limiting & API Throttling
+Prevents abuse and controls LLM API costs.
+- Redis-backed sliding window rate limiter applied as FastAPI middleware.
+- Two tiers: **default** (60 requests/min) and **llm** (10 requests/min for chat/stream/summarize).
+- Injects `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset` response headers.
+- Returns `429 Too Many Requests` with `Retry-After` header when quota exceeded.
+- Users identified by `X-User-ID` header, falling back to client IP.
+
+#### 9. Structured Logging & Request Tracing
+Production-grade observability for debugging and monitoring.
+- JSON-formatted structured logging replacing all `print()` statements.
+- `X-Request-ID` correlation ID generated per request and propagated via `contextvars`.
+- Every log line includes `request_id`, `user_id`, `timestamp`, and `level` fields.
+- Error logs include source file, line number, and function name.
+- Request tracing middleware logs method, path, status code, and duration.
+
+#### 10. Rule Scheduling & Time-Awareness
+Activate rules only during specific time windows.
+- Supports **one-time** windows (start/end datetime) and **recurring** schedules (daily time windows with weekday bitmask).
+- Day-of-week bitmask: Mon=1, Tue=2, Wed=4, Thu=8, Fri=16, Sat=32, Sun=64 (127=all, 31=weekdays).
+- Time windows use `HH:MM-HH:MM` format with overnight support (e.g., `22:00-06:00`).
+- Rule engine filters out inactive rules transparently during prompt assembly.
+- Batch-optimized schedule checking avoids N+1 queries.
+
+#### 11. Audit Trail REST API
+Full queryable history of every rule lifecycle event.
+- Paginated listing with filters: event type, rule ID, date range.
+- Aggregate statistics: event counts by type, most recent event.
+- CSV export for compliance and external reporting.
+- Replaces and supersedes the legacy `/audit` endpoint with richer functionality.
+
+#### 12. Rule Tagging & Grouping
+Flexible tag-based rule organization.
+- Many-to-many relationship between rules and user-defined tags.
+- Tags have custom names and hex color codes.
+- Bulk tag operations for batch rule organization.
+- Filter rules by tag for focused context management.
+
 ### Frontend Features
 
 #### 🎨 UI & Experience
@@ -234,6 +277,23 @@ Provides deep status monitoring of critical application resources.
 | GET | `/api/health/ready` | Readiness probe check (DB + Redis) |
 | GET | `/api/health/live` | Liveness probe check |
 | GET | `/api/audit` | Get audit log events |
+| GET | `/api/audit/stats` | Aggregated audit event statistics |
+| GET | `/api/audit/{id}` | Get single audit log entry |
+| GET | `/api/audit/export/csv` | Export audit logs as CSV |
+| GET | `/api/rate-limit/status` | Current user's rate limit quota |
+| POST | `/api/rules/{id}/schedules` | Attach a time-based schedule to a rule |
+| GET | `/api/rules/{id}/schedules` | List schedules for a rule |
+| GET | `/api/rules/{id}/active-now` | Check if a rule is currently active |
+| DELETE | `/api/schedules/{id}` | Delete a schedule |
+| PATCH | `/api/schedules/{id}/toggle` | Toggle a schedule on/off |
+| POST | `/api/tags` | Create a new tag |
+| GET | `/api/tags` | List all tags with rule counts |
+| PATCH | `/api/tags/{id}` | Update a tag |
+| DELETE | `/api/tags/{id}` | Delete a tag |
+| POST | `/api/rules/{id}/tags` | Attach tags to a rule |
+| DELETE | `/api/rules/{id}/tags` | Remove tags from a rule |
+| GET | `/api/tags/{id}/rules` | Get rules by tag |
+| POST | `/api/tags/bulk` | Bulk-tag multiple rules |
 | GET | `/api/analytics` | Aggregated usage statistics (totals, daily activity, category breakdown) |
 | GET | `/api/search` | Full-text search across conversations with snippets |
 | GET | `/api/suggestions` | AI-powered rule suggestions from interaction patterns |
@@ -329,10 +389,12 @@ AI OS/
 │   │   │   ├── extraction.py    # Rule extraction logic
 │   │   │   ├── conflict_detector.py # LLM-based pairwise conflict analysis
 │   │   │   ├── events.py        # Internal asynchronous EventBus singleton
-│   │   │   └── streaming.py     # SSE chunk streaming engine
+│   │   │   ├── streaming.py     # SSE chunk streaming engine
+│   │   │   ├── rate_limiter.py  # Redis sliding window rate limiter + middleware
+│   │   │   └── logging.py       # JSON structured logger + request tracing middleware
 │   │   ├── services/
 │   │   │   ├── interaction.py   # Main orchestration
-│   │   │   ├── rule_engine.py   # Rule CRUD + ranking
+│   │   │   ├── rule_engine.py   # Rule CRUD + ranking (schedule-aware)
 │   │   │   ├── memory.py        # Vector search
 │   │   │   ├── analytics.py     # Usage statistics aggregation
 │   │   │   ├── suggestions.py   # AI-powered rule suggestions
@@ -341,11 +403,14 @@ AI OS/
 │   │   │   ├── versioning.py    # Rule history snapshotting and diffing
 │   │   │   ├── webhook_service.py # Webhook validation and delivery management
 │   │   │   ├── conversation_service.py # Fork tree and branch creation
-│   │   │   └── import_service.py # Bulk template imports with duplicate mitigation
-│   │   ├── models/              # SQLAlchemy models (user, rule, audit_log, rule_conflict, rule_version, conversation, webhook)
+│   │   │   ├── import_service.py # Bulk template imports with duplicate mitigation
+│   │   │   ├── scheduling_service.py # Rule time-window scheduling
+│   │   │   ├── audit_service.py  # Audit log querying, stats, and CSV export
+│   │   │   └── tag_service.py    # Tag CRUD, rule associations, bulk tagging
+│   │   ├── models/              # SQLAlchemy models (user, rule, audit_log, rule_conflict, rule_version, conversation, webhook, rule_schedule, rule_tag)
 │   │   ├── db/                  # Database connections (session, redis, vector)
 │   │   └── jobs/                # Background tasks (scheduler, decay_processor, rule_extractor, conflict_scanner, webhook_dispatcher)
-│   ├── tests/                   # Automated pytest suite (conftest, test_conflict_detector, test_conversations, test_imports, test_streaming, test_versioning, test_webhooks)
+│   ├── tests/                   # Automated pytest suite (41 tests across 10 test modules)
 │   ├── schema.sql
 │   └── requirements.txt
 │
@@ -415,6 +480,9 @@ AI OS/
 | `CONFIDENCE_THRESHOLD` | Min confidence for rule application | `0.3` |
 | `DECAY_RATE` | Confidence decay per week | `0.05` |
 | `SIMILARITY_THRESHOLD` | Threshold for duplicate detection | `0.85` |
+| `RATE_LIMIT_DEFAULT` | Requests/min for general endpoints | `60` |
+| `RATE_LIMIT_LLM` | Requests/min for LLM-intensive endpoints | `10` |
+| `RATE_LIMIT_BURST` | Burst size for rate limiting | `5` |
 
 ## Contributing
 
