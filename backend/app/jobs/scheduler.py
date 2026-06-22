@@ -2,16 +2,56 @@
 Personal AI OS - Background Job Scheduler
 
 Uses APScheduler for periodic job execution.
+All jobs are wrapped with the @tracked_job decorator for observability.
 """
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 
+from app.core.job_tracker import tracked_job
+from app.core.logging import get_logger
+from app.config import get_settings
+
+logger = get_logger("jobs.scheduler")
+
+# --- Wrap existing jobs with tracking ---
+
 from app.jobs.decay_processor import process_decay
 from app.jobs.rule_extractor import process_pending_extractions
 from app.jobs.conflict_scanner import scan_conflicts
 from app.jobs.webhook_dispatcher import retry_failed_webhooks
-from app.config import get_settings
+from app.jobs.effectiveness_job import compute_effectiveness_scores
+from app.jobs.retention_job import run_retention_cleanup
+
+
+@tracked_job
+async def _tracked_decay():
+    await process_decay()
+
+
+@tracked_job
+async def _tracked_extractions():
+    await process_pending_extractions()
+
+
+@tracked_job
+async def _tracked_conflicts():
+    await scan_conflicts()
+
+
+@tracked_job
+async def _tracked_webhooks():
+    await retry_failed_webhooks()
+
+
+@tracked_job
+async def _tracked_effectiveness():
+    await compute_effectiveness_scores()
+
+
+@tracked_job
+async def _tracked_retention():
+    await run_retention_cleanup()
 
 
 # Global scheduler instance
@@ -27,7 +67,7 @@ async def start_scheduler():
 
     # Decay processor - runs daily at 3 AM
     scheduler.add_job(
-        process_decay,
+        _tracked_decay,
         trigger=CronTrigger(hour=3, minute=0),
         id="decay_processor",
         name="Rule Confidence Decay Processor",
@@ -36,7 +76,7 @@ async def start_scheduler():
 
     # Rule extractor - runs every 30 minutes
     scheduler.add_job(
-        process_pending_extractions,
+        _tracked_extractions,
         trigger=IntervalTrigger(minutes=30),
         id="rule_extractor",
         name="Pending Rule Extractor",
@@ -45,7 +85,7 @@ async def start_scheduler():
 
     # Conflict scanner - runs every N hours (default 6)
     scheduler.add_job(
-        scan_conflicts,
+        _tracked_conflicts,
         trigger=IntervalTrigger(hours=settings.conflict_scan_interval),
         id="conflict_scanner",
         name="Rule Conflict Scanner",
@@ -54,15 +94,35 @@ async def start_scheduler():
 
     # Webhook retry dispatcher - runs every 5 minutes
     scheduler.add_job(
-        retry_failed_webhooks,
+        _tracked_webhooks,
         trigger=IntervalTrigger(minutes=5),
         id="webhook_dispatcher",
         name="Webhook Retry Dispatcher",
         replace_existing=True
     )
 
+    # Effectiveness scorer - runs daily at 4 AM
+    scheduler.add_job(
+        _tracked_effectiveness,
+        trigger=CronTrigger(hour=4, minute=0),
+        id="effectiveness_scorer",
+        name="Rule Effectiveness Scorer",
+        replace_existing=True
+    )
+
+    # Retention cleanup - runs daily at 2 AM
+    scheduler.add_job(
+        _tracked_retention,
+        trigger=CronTrigger(hour=2, minute=0),
+        id="retention_cleanup",
+        name="Data Retention Cleanup",
+        replace_existing=True
+    )
+
     scheduler.start()
-    print("[Scheduler] Background jobs started")
+    logger.info("Background jobs started", extra={"extra_data": {
+        "job_count": len(scheduler.get_jobs()),
+    }})
 
 
 async def stop_scheduler():
@@ -71,7 +131,7 @@ async def stop_scheduler():
     
     if scheduler:
         scheduler.shutdown(wait=False)
-        print("[Scheduler] Background jobs stopped")
+        logger.info("Background jobs stopped")
 
 
 def get_scheduler() -> AsyncIOScheduler:

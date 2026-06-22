@@ -70,6 +70,11 @@ class Settings(BaseSettings):
     rate_limit_default: int = Field(default=60, alias="RATE_LIMIT_DEFAULT")
     rate_limit_llm: int = Field(default=10, alias="RATE_LIMIT_LLM")
     rate_limit_burst: int = Field(default=5, alias="RATE_LIMIT_BURST")
+
+    # Data Retention (days, 0 = keep forever)
+    retention_interactions_days: int = Field(default=90, alias="RETENTION_INTERACTIONS_DAYS")
+    retention_audit_days: int = Field(default=365, alias="RETENTION_AUDIT_DAYS")
+    retention_conversations_days: int = Field(default=180, alias="RETENTION_CONVERSATIONS_DAYS")
     
     class Config:
         env_file = ".env"

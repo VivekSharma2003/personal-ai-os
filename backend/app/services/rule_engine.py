@@ -144,7 +144,7 @@ class RuleEngineService:
         return list(result.scalars().all())
     
     async def get_active_rules(self, user_id: UUID) -> List[Rule]:
-        """Get all active rules for a user, respecting time-based schedules."""
+        """Get all active rules for a user, respecting schedules and dependencies."""
         rules = await self.get_user_rules(user_id, status=RuleStatus.ACTIVE.value)
 
         if not rules:
@@ -160,6 +160,18 @@ class RuleEngineService:
             rules = [r for r in rules if r.id in active_id_set]
         except Exception:
             pass  # On error, return all rules (fail-open)
+
+        # Filter by dependency chains
+        if rules:
+            try:
+                from app.services.dependency_service import DependencyService
+                dep_service = DependencyService(self.db)
+                rule_ids = [r.id for r in rules]
+                resolved_ids = await dep_service.resolve_chain(rule_ids)
+                resolved_set = set(resolved_ids)
+                rules = [r for r in rules if r.id in resolved_set]
+            except Exception:
+                pass  # On error, return all rules (fail-open)
 
         return rules
     

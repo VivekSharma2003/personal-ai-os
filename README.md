@@ -177,6 +177,38 @@ Flexible tag-based rule organization.
 - Bulk tag operations for batch rule organization.
 - Filter rules by tag for focused context management.
 
+#### 13. Rule Effectiveness Analytics
+AI-powered scoring of rule performance based on user interactions.
+- Automatically tracks rule applications, reinforcements, and overrides.
+- Computes effectiveness scores, success rates, and trend vectors.
+- Highlights top performing rules, stale rules, and rules requiring correction.
+- Scheduled daily recomputation and on-demand stats retrieval.
+
+#### 14. API Key Management
+Secure, multi-key authentication with granular access controls and usage tracking.
+- SHA-256 hashed storage for keys with client-facing safe prefixes.
+- Permissions scope validation (`rules:read`, `rules:write`, `chat`, etc.) and key expiration enforcement.
+- Automated API key rotation mechanism.
+- Backward compatibility fallback to legacy user identification headers.
+
+#### 15. Rule Dependency Chains
+Advanced rule execution graph resolution.
+- Declares logic relationships between rules (`requires`, `excludes`, `enhances`).
+- Graph cycle-detection to prevent infinite execution loops during creation.
+- Prunes rules dynamically at prompt building time based on the status of dependent rules.
+
+#### 16. Background Job Dashboard
+Operational observability of the scheduler and background workers.
+- Ring-buffered in-memory execution history logs capturing the last 100 runs per job.
+- Performance statistics (total runs, error rates, average duration).
+- Manual job triggers and pause/resume switches.
+
+#### 17. Data Retention Policies
+Automated database maintenance and regulatory compliance utilities.
+- Configurable Time-To-Live (TTL) profiles for interactions, audit logs, and conversations.
+- Dry-run cleanup preview showing estimated space/record reclamation.
+- Daily scheduled background pruning.
+
 ### Frontend Features
 
 #### 🎨 UI & Experience
@@ -299,6 +331,25 @@ Flexible tag-based rule organization.
 | GET | `/api/suggestions` | AI-powered rule suggestions from interaction patterns |
 | POST | `/api/summarize` | LLM-powered conversation summary with topics & action items |
 | GET | `/api/export` | Full data export (rules, conversations, audit) as JSON |
+| GET | `/api/rules/effectiveness` | Get user-wide effectiveness report |
+| GET | `/api/rules/{rule_id}/effectiveness` | Get effectiveness metrics for a single rule |
+| POST | `/api/keys` | Create a new scoped API key |
+| GET | `/api/keys` | List active API keys (metadata only) |
+| DELETE | `/api/keys/{key_id}` | Revoke/disable an API key |
+| POST | `/api/keys/{key_id}/rotate` | Rotate an API key, issuing a new key with same scopes |
+| POST | `/api/rules/{rule_id}/dependencies` | Add a dependency to a rule |
+| GET | `/api/rules/{rule_id}/dependencies` | List dependencies for a rule |
+| DELETE | `/api/dependencies/{dep_id}` | Remove a dependency |
+| GET | `/api/rules/dependency-graph` | Retrieve user's full dependency graph |
+| GET | `/api/jobs` | List background jobs with status and statistics |
+| GET | `/api/jobs/{job_id}/history` | Get run history for a background job |
+| POST | `/api/jobs/{job_id}/trigger` | Manually execute a background job |
+| PATCH | `/api/jobs/{job_id}/pause` | Pause/resume background job scheduling |
+| GET | `/api/retention` | Get active data retention policies |
+| PUT | `/api/retention` | Create/update a data retention policy |
+| POST | `/api/retention/preview` | Dry-run preview of data retention cleanup |
+| POST | `/api/retention/cleanup` | Trigger manual data retention cleanup |
+| GET | `/api/retention/stats` | Retrieve database storage usage statistics |
 
 ## Quick Start
 

@@ -11,6 +11,7 @@ from app.config import get_settings
 from app.api.routes import chat, feedback, rules, analytics, search, suggestions, summarize, export
 from app.api.routes import conflicts, versions, stream, webhooks, conversations, rule_import, health
 from app.api.routes import rate_limit, schedules, audit, tags
+from app.api.routes import effectiveness, api_keys, dependencies, jobs, retention
 from app.db.session import init_db, close_db
 from app.db.redis import init_redis, close_redis
 from app.db.vector import init_vector_db
@@ -21,6 +22,9 @@ from app.core.logging import setup_logging, get_logger
 # Import new models so Base.metadata.create_all picks them up
 import app.models.rule_schedule  # noqa: F401
 import app.models.rule_tag  # noqa: F401
+import app.models.api_key  # noqa: F401
+import app.models.rule_dependency  # noqa: F401
+import app.models.retention  # noqa: F401
 
 
 settings = get_settings()
@@ -120,6 +124,10 @@ app.add_middleware(
 from app.core.rate_limiter import RateLimitMiddleware  # noqa: E402
 app.add_middleware(RateLimitMiddleware)
 
+# API key authentication middleware
+from app.core.api_key_auth import APIKeyMiddleware  # noqa: E402
+app.add_middleware(APIKeyMiddleware)
+
 # Request tracing middleware (X-Request-ID correlation)
 from app.core.logging import RequestTracingMiddleware  # noqa: E402
 app.add_middleware(RequestTracingMiddleware)
@@ -148,6 +156,13 @@ app.include_router(rate_limit.router, prefix="/api", tags=["rate-limiting"])
 app.include_router(schedules.router, prefix="/api", tags=["schedules"])
 app.include_router(audit.router, prefix="/api", tags=["audit"])
 app.include_router(tags.router, prefix="/api", tags=["tags"])
+
+# --- Feature Routers (Batch 3) ---
+app.include_router(effectiveness.router, prefix="/api", tags=["effectiveness"])
+app.include_router(api_keys.router, prefix="/api", tags=["api-keys"])
+app.include_router(dependencies.router, prefix="/api", tags=["dependencies"])
+app.include_router(jobs.router, prefix="/api", tags=["jobs"])
+app.include_router(retention.router, prefix="/api", tags=["retention"])
 
 
 if __name__ == "__main__":
