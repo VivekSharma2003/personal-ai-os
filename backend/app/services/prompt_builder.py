@@ -21,7 +21,9 @@ class PromptBuilderService:
         user_message: str,
         rules: List[dict],
         conversation_id: Optional[str] = None,
-        include_history: bool = True
+        include_history: bool = True,
+        db: Optional[object] = None,
+        profile_id: Optional[str] = None
     ) -> List[Dict[str, str]]:
         """
         Build a complete chat prompt with rules and conversation history.
@@ -31,14 +33,33 @@ class PromptBuilderService:
             rules: List of rule dicts to apply
             conversation_id: Optional conversation ID for history
             include_history: Whether to include conversation history
+            db: Optional database session
+            profile_id: Optional prompt profile ID to apply
         
         Returns:
             List of message dicts ready for the LLM
         """
+        system_preamble = ""
+        filtered_rules = rules
+
+        if profile_id and db:
+            try:
+                from app.services.profile_service import ProfileService
+                from uuid import UUID
+                profile_service = ProfileService(db)
+                profile_result = await profile_service.apply_profile(UUID(profile_id), rules)
+                filtered_rules = profile_result["filtered_rules"]
+                system_preamble = profile_result["system_preamble"]
+            except Exception:
+                pass
+
         messages = []
         
         # System prompt with rules
-        system_prompt = build_system_prompt(rules)
+        system_prompt = build_system_prompt(filtered_rules)
+        if system_preamble:
+            system_prompt = f"{system_preamble}\n\n{system_prompt}"
+
         messages.append({"role": "system", "content": system_prompt})
         
         # Add conversation history if available
