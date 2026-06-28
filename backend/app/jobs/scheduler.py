@@ -22,6 +22,7 @@ from app.jobs.conflict_scanner import scan_conflicts
 from app.jobs.webhook_dispatcher import retry_failed_webhooks
 from app.jobs.effectiveness_job import compute_effectiveness_scores
 from app.jobs.retention_job import run_retention_cleanup
+from app.jobs.lifecycle_job import run_lifecycle_scan
 
 
 @tracked_job
@@ -52,6 +53,11 @@ async def _tracked_effectiveness():
 @tracked_job
 async def _tracked_retention():
     await run_retention_cleanup()
+
+
+@tracked_job
+async def _tracked_lifecycle():
+    await run_lifecycle_scan()
 
 
 # Global scheduler instance
@@ -116,6 +122,15 @@ async def start_scheduler():
         trigger=CronTrigger(hour=2, minute=0),
         id="retention_cleanup",
         name="Data Retention Cleanup",
+        replace_existing=True
+    )
+
+    # Lifecycle manager - runs daily at 5 AM
+    scheduler.add_job(
+        _tracked_lifecycle,
+        trigger=CronTrigger(hour=5, minute=0),
+        id="lifecycle_manager",
+        name="Rule Lifecycle Manager",
         replace_existing=True
     )
 
