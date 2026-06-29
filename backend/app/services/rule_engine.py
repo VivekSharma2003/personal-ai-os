@@ -382,6 +382,16 @@ class RuleEngineService:
 
         await RuleCache.invalidate_user_rules(str(rule.user_id))
 
+        # Auto-resurrect archived rules when reinforced
+        if rule.status == RuleStatus.ARCHIVED.value:
+            try:
+                from app.services.lifecycle_service import LifecycleService
+                lifecycle = LifecycleService(self.db)
+                await lifecycle.resurrect_rule(rule.id)
+                logger.info(f"Auto-resurrected archived rule {rule.id} on reinforcement")
+            except Exception:
+                pass  # Fail-open: don't block reinforcement
+
         return rule
     
     async def mark_rule_applied(self, rule_id: UUID) -> Optional[Rule]:
