@@ -52,10 +52,16 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
         if auth_header.startswith("Bearer "):
             raw_key = auth_header[7:].strip()
             if raw_key:
+                request.state.ip_violation = False
                 user = await self._validate_api_key(request, raw_key)
                 if user is None:
                     from starlette.responses import JSONResponse
 
+                    if getattr(request.state, "ip_violation", False):
+                        return JSONResponse(
+                            status_code=403,
+                            content={"detail": "IP address not allowed"},
+                        )
                     return JSONResponse(
                         status_code=401,
                         content={"detail": "Invalid or expired API key"},
@@ -82,6 +88,7 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
         try:
             from app.db.session import async_session_maker
             from app.services.api_key_service import APIKeyService
+            from app.services.session_service import SessionService
             from app.models.user import User
             from sqlalchemy import select
 
@@ -100,6 +107,22 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
 
                 if not user:
                     return None
+
+                # IP Allowlist check
+                client_host = request.client.host if request.client else "127.0.0.1"
+                session_service = SessionService(db)
+                if not session_service.check_ip_allowed(api_key.ip_allowlist or [], client_host):
+                    request.state.ip_violation = True
+                    return None
+
+                # Track request session
+                user_agent = request.headers.get("user-agent", "")
+                await session_service.track_request(
+                    user_id=user.id,
+                    api_key_id=api_key.id,
+                    ip_address=client_host,
+                    user_agent=user_agent,
+                )
 
                 # Set request state
                 request.state.user_external_id = user.external_id

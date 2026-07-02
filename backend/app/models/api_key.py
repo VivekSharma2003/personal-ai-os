@@ -41,6 +41,9 @@ class APIKey(Base):
     expires_at = Column(DateTime, nullable=True)
     last_used_at = Column(DateTime, nullable=True)
 
+    # Security: IP allowlist (empty list = all IPs allowed)
+    ip_allowlist = Column(JSONB, default=[])
+
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)
 
@@ -64,6 +67,7 @@ class APIKey(Base):
             "key_prefix": self.key_prefix,
             "scopes": self.scopes,
             "is_active": self.is_active,
+            "ip_allowlist": self.ip_allowlist or [],
             "expires_at": self.expires_at.isoformat() if self.expires_at else None,
             "last_used_at": self.last_used_at.isoformat() if self.last_used_at else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,
