@@ -75,6 +75,17 @@ class Settings(BaseSettings):
     retention_interactions_days: int = Field(default=90, alias="RETENTION_INTERACTIONS_DAYS")
     retention_audit_days: int = Field(default=365, alias="RETENTION_AUDIT_DAYS")
     retention_conversations_days: int = Field(default=180, alias="RETENTION_CONVERSATIONS_DAYS")
+
+    # LLM Budget Guardrails (USD, 0 = unlimited)
+    llm_budget_daily_usd: float = Field(default=5.0, alias="LLM_BUDGET_DAILY_USD")
+    llm_budget_monthly_usd: float = Field(default=100.0, alias="LLM_BUDGET_MONTHLY_USD")
+
+    # Rule Lifecycle
+    lifecycle_stale_days: int = Field(default=30, alias="LIFECYCLE_STALE_DAYS")
+    lifecycle_auto_archive: bool = Field(default=True, alias="LIFECYCLE_AUTO_ARCHIVE")
+
+    # A/B Experiments
+    experiment_min_sample: int = Field(default=50, alias="EXPERIMENT_MIN_SAMPLE")
     
     class Config:
         env_file = ".env"

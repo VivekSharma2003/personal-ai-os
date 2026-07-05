@@ -12,6 +12,7 @@ from app.api.routes import chat, feedback, rules, analytics, search, suggestions
 from app.api.routes import conflicts, versions, stream, webhooks, conversations, rule_import, health
 from app.api.routes import rate_limit, schedules, audit, tags
 from app.api.routes import effectiveness, api_keys, dependencies, jobs, retention
+from app.api.routes import costs, experiments, profiles, lifecycle, sessions
 from app.db.session import init_db, close_db
 from app.db.redis import init_redis, close_redis
 from app.db.vector import init_vector_db
@@ -25,6 +26,10 @@ import app.models.rule_tag  # noqa: F401
 import app.models.api_key  # noqa: F401
 import app.models.rule_dependency  # noqa: F401
 import app.models.retention  # noqa: F401
+import app.models.llm_usage  # noqa: F401
+import app.models.experiment  # noqa: F401
+import app.models.prompt_profile  # noqa: F401
+import app.models.session  # noqa: F401
 
 
 settings = get_settings()
@@ -135,6 +140,7 @@ app.add_middleware(RequestTracingMiddleware)
 # --- Existing Routers ---
 app.include_router(chat.router, prefix="/api", tags=["chat"])
 app.include_router(feedback.router, prefix="/api", tags=["feedback"])
+app.include_router(lifecycle.router, prefix="/api", tags=["lifecycle"])
 app.include_router(rules.router, prefix="/api", tags=["rules"])
 app.include_router(analytics.router, prefix="/api", tags=["analytics"])
 app.include_router(search.router, prefix="/api", tags=["search"])
@@ -163,6 +169,12 @@ app.include_router(api_keys.router, prefix="/api", tags=["api-keys"])
 app.include_router(dependencies.router, prefix="/api", tags=["dependencies"])
 app.include_router(jobs.router, prefix="/api", tags=["jobs"])
 app.include_router(retention.router, prefix="/api", tags=["retention"])
+
+# --- Feature Routers (Batch 4) ---
+app.include_router(costs.router, prefix="/api", tags=["costs"])
+app.include_router(experiments.router, prefix="/api", tags=["experiments"])
+app.include_router(profiles.router, prefix="/api", tags=["profiles"])
+app.include_router(sessions.router, prefix="/api", tags=["sessions"])
 
 
 if __name__ == "__main__":
