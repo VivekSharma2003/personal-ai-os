@@ -209,6 +209,35 @@ Automated database maintenance and regulatory compliance utilities.
 - Dry-run cleanup preview showing estimated space/record reclamation.
 - Daily scheduled background pruning.
 
+#### 18. LLM Cost Tracker & Budget Guardrails
+Observability and cost management for model consumption.
+- Per-request cost metering based on provider pricing tables.
+- Daily and monthly hard budget spend limits to block overspending.
+- REST analytics endpoints for trend tracking and breakdowns by model/endpoint.
+
+#### 19. Rule A/B Testing (Experiments)
+Controlled A/B testing of rule variants to optimize user experience.
+- Random traffic splitting between rule variant A and variant B.
+- Simple proportion z-test statistics to dynamically determine winners ($p < 0.05$).
+- Auto-promotion of the winning rule and archiving of the losing rule on conclusion.
+
+#### 20. Context-Aware Prompt Profiles
+Dynamic system prompts and configuration presets.
+- Pre-selects specific rules by tags or categories and overrides parameters (temperature, max_tokens).
+- Custom system preamble injection based on active profiles.
+- Integrated `profile_id` support inside prompt builder logic.
+
+#### 21. Rule Auto-Archival & Lifecycle Manager
+Automated rules lifecycle states and operations.
+- Background cron job to identify and archive stale rules with declining confidence.
+- Re-triggering or reinforcing archived rules auto-resurrects them with confidence bumps.
+
+#### 22. IP Allowlisting & Session Security
+Security hardening for API access keys.
+- Locks API key usage to specific IPv4/IPv6 CIDR ranges.
+- Tracks active requests by (API key, IP) to log sessions and client metrics.
+- Automatic anomaly detection (flags rapid request volume increases or geo-mismatches).
+
 ### Frontend Features
 
 #### 🎨 UI & Experience
