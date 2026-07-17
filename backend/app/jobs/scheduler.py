@@ -23,6 +23,7 @@ from app.jobs.webhook_dispatcher import retry_failed_webhooks
 from app.jobs.effectiveness_job import compute_effectiveness_scores
 from app.jobs.retention_job import run_retention_cleanup
 from app.jobs.lifecycle_job import run_lifecycle_scan
+from app.jobs.notification_job import generate_daily_digests
 
 
 @tracked_job
@@ -58,6 +59,11 @@ async def _tracked_retention():
 @tracked_job
 async def _tracked_lifecycle():
     await run_lifecycle_scan()
+
+
+@tracked_job
+async def _tracked_digests():
+    await generate_daily_digests()
 
 
 # Global scheduler instance
@@ -131,6 +137,15 @@ async def start_scheduler():
         trigger=CronTrigger(hour=5, minute=0),
         id="lifecycle_manager",
         name="Rule Lifecycle Manager",
+        replace_existing=True
+    )
+
+    # Notification digest - runs daily at configured hour (default 8 AM)
+    scheduler.add_job(
+        _tracked_digests,
+        trigger=CronTrigger(hour=settings.notification_digest_hour, minute=0),
+        id="notification_digest",
+        name="Notification Digest Generator",
         replace_existing=True
     )
 
