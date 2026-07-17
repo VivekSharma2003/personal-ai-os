@@ -13,6 +13,7 @@ from app.api.routes import conflicts, versions, stream, webhooks, conversations,
 from app.api.routes import rate_limit, schedules, audit, tags
 from app.api.routes import effectiveness, api_keys, dependencies, jobs, retention
 from app.api.routes import costs, experiments, profiles, lifecycle, sessions
+from app.api.routes import clusters, shared_library, replay, notifications, simulation
 from app.db.session import init_db, close_db
 from app.db.redis import init_redis, close_redis
 from app.db.vector import init_vector_db
@@ -30,6 +31,10 @@ import app.models.llm_usage  # noqa: F401
 import app.models.experiment  # noqa: F401
 import app.models.prompt_profile  # noqa: F401
 import app.models.session  # noqa: F401
+import app.models.rule_cluster  # noqa: F401
+import app.models.shared_rule  # noqa: F401
+import app.models.replay  # noqa: F401
+import app.models.notification  # noqa: F401
 
 
 settings = get_settings()
@@ -175,6 +180,13 @@ app.include_router(costs.router, prefix="/api", tags=["costs"])
 app.include_router(experiments.router, prefix="/api", tags=["experiments"])
 app.include_router(profiles.router, prefix="/api", tags=["profiles"])
 app.include_router(sessions.router, prefix="/api", tags=["sessions"])
+
+# --- Feature Routers (Batch 5) ---
+app.include_router(clusters.router, prefix="/api", tags=["clusters"])
+app.include_router(shared_library.router, prefix="/api", tags=["shared-library"])
+app.include_router(replay.router, prefix="/api", tags=["replay"])
+app.include_router(notifications.router, prefix="/api", tags=["notifications"])
+app.include_router(simulation.router, prefix="/api", tags=["simulation"])
 
 
 if __name__ == "__main__":
