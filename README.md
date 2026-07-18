@@ -238,6 +238,38 @@ Security hardening for API access keys.
 - Tracks active requests by (API key, IP) to log sessions and client metrics.
 - Automatic anomaly detection (flags rapid request volume increases or geo-mismatches).
 
+#### 23. Rule Similarity Clusters
+Automatic grouping of semantically similar rules for deduplication.
+- FAISS-powered pairwise similarity analysis with union-find clustering.
+- Auto-generated cluster names based on category analysis.
+- LLM-powered cluster merge: consolidates multiple rules into a single generalized rule.
+
+#### 24. Multi-User Shared Rule Library
+Community-driven rule sharing and discovery.
+- Publish personal rules to a shared library with title, description, and visibility controls.
+- Browse, search, and filter shared rules by category, popularity, or rating.
+- One-click install clones rules into personal rulesets with attribution tracking.
+- 1–5 star rating system with aggregate scoring.
+
+#### 25. Prompt Replay & Regression Testing
+Detect regressions or improvements after rule changes.
+- Re-runs past interactions against the current rule set and compares outputs.
+- Jaccard word-overlap similarity scoring with LLM-based regression/improvement classification.
+- Progress tracking, verdict filtering, and diff summaries for each replayed interaction.
+
+#### 26. Rule Change Notifications & Digest
+Event notification system with periodic digest generation.
+- Queues notifications for rule lifecycle events (created, archived, conflicted, decayed).
+- Unread badge count with per-type breakdown.
+- LLM-powered daily digest: summarizes 24 hours of audit log activity into natural language.
+- Scheduled background job generates digests for all active users.
+
+#### 27. Rule Impact Simulation (Dry-Run)
+"What-if" analysis for rule changes without persisting.
+- Preview how adding a new rule would change AI responses across test prompts.
+- Preview how editing an existing rule would alter outputs (old vs. new content).
+- Impact scores (0–1) and word-level diff summaries for each test prompt.
+
 ### Frontend Features
 
 #### 🎨 UI & Experience
