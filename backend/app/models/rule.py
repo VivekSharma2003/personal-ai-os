@@ -64,6 +64,7 @@ class Rule(Base):
     # Relationships
     user = relationship("User", back_populates="rules")
     audit_logs = relationship("AuditLog", back_populates="rule")
+    model_configs = relationship("RuleModelConfig", back_populates="rule", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<Rule {self.id}: {self.content[:50]}...>"
@@ -72,6 +73,7 @@ class Rule(Base):
         """Convert to dictionary for API responses."""
         return {
             "id": str(self.id),
+            "user_id": str(self.user_id),
             "content": self.content,
             "original_correction": self.original_correction,
             "category": self.category,
