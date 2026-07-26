@@ -57,7 +57,9 @@ class InteractionService:
         messages = await self.prompt_builder.build_chat_prompt(
             user_message=message,
             rules=rules,
-            conversation_id=conversation_id
+            conversation_id=conversation_id,
+            db=self.db,
+            user_id=user.id
         )
         
         # Truncate if needed
