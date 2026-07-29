@@ -86,6 +86,15 @@ class Settings(BaseSettings):
 
     # A/B Experiments
     experiment_min_sample: int = Field(default=50, alias="EXPERIMENT_MIN_SAMPLE")
+
+    # Clustering
+    cluster_similarity_threshold: float = Field(default=0.75, alias="CLUSTER_SIMILARITY_THRESHOLD")
+
+    # Replay
+    replay_max_concurrent: int = Field(default=5, alias="REPLAY_MAX_CONCURRENT")
+
+    # Notifications
+    notification_digest_hour: int = Field(default=8, alias="NOTIFICATION_DIGEST_HOUR")
     
     class Config:
         env_file = ".env"
