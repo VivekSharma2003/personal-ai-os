@@ -59,7 +59,9 @@ async def stream_chat(
         messages = await prompt_builder.build_chat_prompt(
             user_message=request.message,
             rules=rules,
-            conversation_id=request.conversation_id
+            conversation_id=request.conversation_id,
+            db=db,
+            user_id=user.id
         )
         messages = prompt_builder.truncate_for_context(messages)
 
