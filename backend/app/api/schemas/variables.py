@@ -3,7 +3,9 @@ Personal AI OS - Variable Schemas
 
 Pydantic schemas for shared variable endpoints.
 """
-from pydantic import BaseModel, Field
+from uuid import UUID
+from datetime import datetime
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 
 
@@ -16,10 +18,12 @@ class SharedVariableUpsert(BaseModel):
 
 class SharedVariableResponse(BaseModel):
     """Response schema for a shared variable."""
-    id: str
-    user_id: str
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    user_id: UUID
     name: str
     value: str
     description: Optional[str] = None
-    created_at: Optional[str] = None
-    updated_at: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
