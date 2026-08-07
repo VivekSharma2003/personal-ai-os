@@ -3,7 +3,9 @@ Personal AI OS - Decay Policy Schemas
 
 Pydantic schemas for decay policy CRUD.
 """
-from pydantic import BaseModel, Field
+from uuid import UUID
+from datetime import datetime
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 
 
@@ -18,15 +20,17 @@ class DecayPolicyUpsert(BaseModel):
 
 class DecayPolicyResponse(BaseModel):
     """Schema for a decay policy override response."""
-    id: str
-    user_id: str
-    tag_id: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    user_id: UUID
+    tag_id: Optional[UUID] = None
     category: Optional[str] = None
     base_decay_rate: float
     grace_period_days: int
     topic_sensitivity: float
-    created_at: Optional[str] = None
-    updated_at: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
 
 class DecayProcessResponse(BaseModel):
