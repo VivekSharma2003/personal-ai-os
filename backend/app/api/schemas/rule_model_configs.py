@@ -3,7 +3,9 @@ Personal AI OS - Rule Model Config Schemas
 
 Pydantic schemas for rule-specific LLM configurations.
 """
-from pydantic import BaseModel, Field
+from uuid import UUID
+from datetime import datetime
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 
 
@@ -18,12 +20,14 @@ class RuleModelConfigUpsert(BaseModel):
 
 class RuleModelConfigResponse(BaseModel):
     """Schema for a model config override response."""
-    id: str
-    rule_id: str
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    rule_id: UUID
     provider: str
     model_name: str
     temperature_override: Optional[float] = None
     max_tokens_override: Optional[int] = None
     optimized_content: Optional[str] = None
-    created_at: Optional[str] = None
-    updated_at: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
