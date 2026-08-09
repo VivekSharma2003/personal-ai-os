@@ -3,19 +3,23 @@ Personal AI OS - Self-Healing Schemas
 
 Pydantic schemas for compliance evaluations and self-healing.
 """
-from pydantic import BaseModel
+from uuid import UUID
+from datetime import datetime
+from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 
 
 class AdherenceEvaluationResponse(BaseModel):
     """Schema for adherence evaluation entry response."""
-    id: str
-    interaction_id: str
-    rule_id: str
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    interaction_id: UUID
+    rule_id: UUID
     adhered: bool
     score: float
     justification: Optional[str] = None
-    created_at: Optional[str] = None
+    created_at: Optional[datetime] = None
 
 
 class RuleAdherenceStat(BaseModel):
