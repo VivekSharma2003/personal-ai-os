@@ -291,3 +291,7 @@ Is this rule relevant? Answer with a JSON object: {{"relevant": true/false, "rea
 
     result = await extract_json_response(prompt)
     return result.get("relevant", False)
+
+
+# Alias call_llm to generate_response for compatibility
+call_llm = generate_response
