@@ -92,8 +92,11 @@ class DecayPolicyService:
         4. Apply decay.
         """
         # Fetch active rules for the user
+        from sqlalchemy.orm import selectinload
         result = await self.db.execute(
-            select(Rule).where(
+            select(Rule)
+            .options(selectinload(Rule.tags))
+            .where(
                 and_(Rule.user_id == user_id, Rule.status == RuleStatus.ACTIVE.value)
             )
         )
