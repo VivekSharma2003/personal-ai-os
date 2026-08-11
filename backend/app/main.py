@@ -14,6 +14,7 @@ from app.api.routes import rate_limit, schedules, audit, tags
 from app.api.routes import effectiveness, api_keys, dependencies, jobs, retention
 from app.api.routes import costs, experiments, profiles, lifecycle, sessions
 from app.api.routes import clusters, shared_library, replay, notifications, simulation
+from app.api.routes import rule_model_configs, decay_policies, variables, self_healing, rule_graph
 from app.db.session import init_db, close_db
 from app.db.redis import init_redis, close_redis
 from app.db.vector import init_vector_db
@@ -35,6 +36,10 @@ import app.models.rule_cluster  # noqa: F401
 import app.models.shared_rule  # noqa: F401
 import app.models.replay  # noqa: F401
 import app.models.notification  # noqa: F401
+import app.models.rule_model_config  # noqa: F401
+import app.models.decay_policy  # noqa: F401
+import app.models.shared_variable  # noqa: F401
+import app.models.adherence_eval  # noqa: F401
 
 
 settings = get_settings()
@@ -187,6 +192,13 @@ app.include_router(shared_library.router, prefix="/api", tags=["shared-library"]
 app.include_router(replay.router, prefix="/api", tags=["replay"])
 app.include_router(notifications.router, prefix="/api", tags=["notifications"])
 app.include_router(simulation.router, prefix="/api", tags=["simulation"])
+
+# --- Feature Routers (Batch 6) ---
+app.include_router(rule_model_configs.router, prefix="/api", tags=["rule-model-configs"])
+app.include_router(decay_policies.router, prefix="/api", tags=["decay-policies"])
+app.include_router(variables.router, prefix="/api", tags=["variables"])
+app.include_router(self_healing.router, prefix="/api", tags=["self-healing"])
+app.include_router(rule_graph.router, prefix="/api", tags=["rule-graph"])
 
 
 if __name__ == "__main__":
