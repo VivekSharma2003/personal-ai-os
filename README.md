@@ -270,6 +270,31 @@ Event notification system with periodic digest generation.
 - Preview how editing an existing rule would alter outputs (old vs. new content).
 - Impact scores (0–1) and word-level diff summaries for each test prompt.
 
+#### 28. Model-Specific Temperature Tuning & Prompt Optimization
+Enables overriding LLM generation parameters and customizing prompt templates for specific models or providers.
+- Override temperature, max output tokens, or prompt templates per provider (OpenAI, Gemini, Anthropic) or individual model names.
+- Auto-applies model-optimized rule variations depending on target provider context during prompt construction.
+
+#### 29. Context-Aware Dynamic Decay with Task Tags
+Balances rule expiration based on category/tag activity.
+- Expiration penalties dynamically scale down when related tags/categories have not seen recent user interactions.
+- Avoids decaying active development rules during periods of purely creative or casual writing sessions.
+
+#### 30. Dynamic Variables & Workspace Shared Parameters
+Supports placeholder parameter evaluation inside active rules.
+- Enables embedding variables like `{{user_name}}`, `{{current_year}}`, or custom values.
+- Variable definitions are shared workspace-wide and resolved at prompt generation time.
+
+#### 31. Automated LLM Adherence Judge & Rule Self-Healing
+Uses independent LLM grading to check rule adherence.
+- Evaluates interaction outcomes and flags consistent rule violations.
+- Suggests self-healed, stricter rule refinements when adherence trends drop below safety thresholds.
+
+#### 32. Rule Execution Graph Visualizer
+Topological dependency sorting and conflict detection.
+- Renders rules as Directed Acyclic Graphs (DAG) mapping `requires`, `excludes`, and `enhances` constraints.
+- Employs cycle-detection algorithms to prevent infinite prompt generation loops.
+
 ### Frontend Features
 
 #### 🎨 UI & Experience
