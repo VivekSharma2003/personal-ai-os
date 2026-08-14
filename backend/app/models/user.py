@@ -24,6 +24,7 @@ class User(Base):
     rules = relationship("Rule", back_populates="user", cascade="all, delete-orphan")
     interactions = relationship("Interaction", back_populates="user", cascade="all, delete-orphan")
     audit_logs = relationship("AuditLog", back_populates="user", cascade="all, delete-orphan")
+    fallback_policies = relationship("LLMFallbackPolicy", back_populates="user", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<User {self.external_id}>"
