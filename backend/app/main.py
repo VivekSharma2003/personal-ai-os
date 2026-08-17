@@ -40,6 +40,7 @@ import app.models.rule_model_config  # noqa: F401
 import app.models.decay_policy  # noqa: F401
 import app.models.shared_variable  # noqa: F401
 import app.models.adherence_eval  # noqa: F401
+import app.models.llm_fallback  # noqa: F401
 
 
 settings = get_settings()
@@ -199,6 +200,10 @@ app.include_router(decay_policies.router, prefix="/api", tags=["decay-policies"]
 app.include_router(variables.router, prefix="/api", tags=["variables"])
 app.include_router(self_healing.router, prefix="/api", tags=["self-healing"])
 app.include_router(rule_graph.router, prefix="/api", tags=["rule-graph"])
+
+# --- Feature Routers (Batch 7) ---
+from app.api.routes import llm_fallbacks
+app.include_router(llm_fallbacks.router)
 
 
 if __name__ == "__main__":
