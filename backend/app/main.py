@@ -202,8 +202,9 @@ app.include_router(self_healing.router, prefix="/api", tags=["self-healing"])
 app.include_router(rule_graph.router, prefix="/api", tags=["rule-graph"])
 
 # --- Feature Routers (Batch 7) ---
-from app.api.routes import llm_fallbacks
+from app.api.routes import llm_fallbacks, cost_optimization
 app.include_router(llm_fallbacks.router)
+app.include_router(cost_optimization.router)
 
 
 if __name__ == "__main__":
