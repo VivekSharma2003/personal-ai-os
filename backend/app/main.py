@@ -41,6 +41,7 @@ import app.models.decay_policy  # noqa: F401
 import app.models.shared_variable  # noqa: F401
 import app.models.adherence_eval  # noqa: F401
 import app.models.llm_fallback  # noqa: F401
+import app.models.episodic_memory  # noqa: F401
 
 
 settings = get_settings()
@@ -202,9 +203,10 @@ app.include_router(self_healing.router, prefix="/api", tags=["self-healing"])
 app.include_router(rule_graph.router, prefix="/api", tags=["rule-graph"])
 
 # --- Feature Routers (Batch 7) ---
-from app.api.routes import llm_fallbacks, cost_optimization
+from app.api.routes import llm_fallbacks, cost_optimization, memory_consolidation
 app.include_router(llm_fallbacks.router)
 app.include_router(cost_optimization.router)
+app.include_router(memory_consolidation.router)
 
 
 if __name__ == "__main__":
