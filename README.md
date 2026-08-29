@@ -295,6 +295,31 @@ Topological dependency sorting and conflict detection.
 - Renders rules as Directed Acyclic Graphs (DAG) mapping `requires`, `excludes`, and `enhances` constraints.
 - Employs cycle-detection algorithms to prevent infinite prompt generation loops.
 
+#### 33. Multi-Provider LLM Fallback & Automatic Retry Policies
+Enables robust and resilient text generation.
+- Gracefully degrades models (e.g., GPT-4o -> Claude 3.5 -> Gemini) if one provider rate limits or crashes.
+- Employs exponential backoff retry algorithms to seamlessly recover from transient errors.
+
+#### 34. Rule Usage Hot-Reload & Prompt Cost Optimizer
+Optimizes context window costs dynamically.
+- Tracks and rates active rules by their efficiency ratio (impact/token cost).
+- Identifies and prunes less critical or low-confidence rules when the total prompt size nears the LLM context limit.
+
+#### 35. Episodic Memory Consolidation & Context Summarizer
+Transforms long chat threads into core memories.
+- Uses LLM summarization and key-takeaway extraction on expired or lengthy conversation threads.
+- Vectorizes memories into a FAISS datastore for semantic relevance search, keeping history alive without context-bloat.
+
+#### 36. Real-Time WebSocket Event & Telemetry Stream
+Connects the backend directly to the frontend for real-time visibility.
+- Emits real-time diagnostic logs, telemetry, and background job notifications (e.g., decay job finished) over WebSockets.
+- Maps socket connections to user contexts for isolated, secure, per-user data streams.
+
+#### 37. Encrypted Rule Portability & Cross-Instance Sync
+Provides a secure mechanism to export/import active rules.
+- Exports all active rules as a compressed, symmetrically encrypted JSON payload using Fernet encryption.
+- Decrypts and dynamically creates rules upon import in another workspace or node, protecting private instructions.
+
 ### Frontend Features
 
 #### 🎨 UI & Experience

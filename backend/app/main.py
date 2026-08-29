@@ -203,11 +203,12 @@ app.include_router(self_healing.router, prefix="/api", tags=["self-healing"])
 app.include_router(rule_graph.router, prefix="/api", tags=["rule-graph"])
 
 # --- Feature Routers (Batch 7) ---
-from app.api.routes import llm_fallbacks, cost_optimization, memory_consolidation, websockets
+from app.api.routes import llm_fallbacks, cost_optimization, memory_consolidation, websockets, portability
 app.include_router(llm_fallbacks.router)
 app.include_router(cost_optimization.router)
 app.include_router(memory_consolidation.router)
 app.include_router(websockets.router)
+app.include_router(portability.router)
 
 
 if __name__ == "__main__":

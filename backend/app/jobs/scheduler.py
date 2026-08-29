@@ -65,6 +65,22 @@ async def _tracked_lifecycle():
 async def _tracked_digests():
     await generate_daily_digests()
 
+@tracked_job
+async def _tracked_memory_consolidation():
+    from sqlalchemy import select
+    from app.db.session import async_session_maker
+    from app.services.memory_consolidation_service import MemoryConsolidationService
+    from app.models.user import User
+    
+    async with async_session_maker() as db:
+        users_res = await db.execute(select(User.id))
+        users = users_res.scalars().all()
+        service = MemoryConsolidationService(db)
+        for uid in users:
+            try:
+                await service.consolidate_old_threads(uid, days_old=30)
+            except Exception as e:
+                logger.error(f"Error consolidating memory for {uid}: {e}")
 
 # Global scheduler instance
 scheduler: AsyncIOScheduler = None
@@ -146,6 +162,15 @@ async def start_scheduler():
         trigger=CronTrigger(hour=settings.notification_digest_hour, minute=0),
         id="notification_digest",
         name="Notification Digest Generator",
+        replace_existing=True
+    )
+
+    # Memory consolidation - runs daily at 1 AM
+    scheduler.add_job(
+        _tracked_memory_consolidation,
+        trigger=CronTrigger(hour=1, minute=0),
+        id="memory_consolidation",
+        name="Episodic Memory Consolidation",
         replace_existing=True
     )
 
