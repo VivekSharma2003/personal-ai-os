@@ -210,6 +210,12 @@ app.include_router(memory_consolidation.router)
 app.include_router(websockets.router)
 app.include_router(portability.router)
 
+# --- Feature Routers (Batch 8) ---
+from app.api.routes import quotas, privacy, moe
+app.include_router(quotas.router)
+app.include_router(privacy.router)
+app.include_router(moe.router)
+
 
 if __name__ == "__main__":
     import uvicorn
