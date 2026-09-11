@@ -38,7 +38,7 @@ class RuleCompressorService:
         
         # Archive old rules
         for r in category_rules:
-            await self.rule_engine.update_rule_status(r.id, RuleStatus.ARCHIVED.value)
+            await self.rule_engine.archive_rule(r.id, reason="compressed")
             
         # Create new compressed rule
         new_rule = await self.rule_engine.create_rule(
