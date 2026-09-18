@@ -42,6 +42,8 @@ import app.models.shared_variable  # noqa: F401
 import app.models.adherence_eval  # noqa: F401
 import app.models.llm_fallback  # noqa: F401
 import app.models.episodic_memory  # noqa: F401
+import app.models.expert_route  # noqa: F401
+import app.models.ab_experiment  # noqa: F401
 
 
 settings = get_settings()
@@ -210,11 +212,14 @@ app.include_router(memory_consolidation.router)
 app.include_router(websockets.router)
 app.include_router(portability.router)
 
-# --- Feature Routers (Batch 8) ---
-from app.api.routes import quotas, privacy, moe
+# --- Feature Routers (Batch 8 & 9) ---
+from app.api.routes import quotas, privacy, moe, rule_compression, security, ab_testing
 app.include_router(quotas.router)
 app.include_router(privacy.router)
 app.include_router(moe.router)
+app.include_router(rule_compression.router)
+app.include_router(security.router)
+app.include_router(ab_testing.router)
 
 
 if __name__ == "__main__":
