@@ -221,6 +221,12 @@ app.include_router(rule_compression.router)
 app.include_router(security.router)
 app.include_router(ab_testing.router)
 
+# --- Feature Routers (Batch 10) ---
+from app.api.routes import llm_cache, token_budget, dedup
+app.include_router(llm_cache.router)
+app.include_router(token_budget.router)
+app.include_router(dedup.router)
+
 
 if __name__ == "__main__":
     import uvicorn
