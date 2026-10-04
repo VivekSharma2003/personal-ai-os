@@ -65,6 +65,7 @@ class Rule(Base):
     user = relationship("User", back_populates="rules")
     audit_logs = relationship("AuditLog", back_populates="rule")
     model_configs = relationship("RuleModelConfig", back_populates="rule", cascade="all, delete-orphan")
+    changelog = relationship("RuleChangelog", back_populates="rule", cascade="all, delete-orphan", order_by="RuleChangelog.version")
     
     def __repr__(self):
         return f"<Rule {self.id}: {self.content[:50]}...>"

@@ -44,6 +44,8 @@ import app.models.llm_fallback  # noqa: F401
 import app.models.episodic_memory  # noqa: F401
 import app.models.expert_route  # noqa: F401
 import app.models.ab_experiment  # noqa: F401
+import app.models.rule_changelog  # noqa: F401
+import app.models.health_snapshot  # noqa: F401
 
 
 settings = get_settings()
@@ -226,6 +228,12 @@ from app.api.routes import llm_cache, token_budget, dedup
 app.include_router(llm_cache.router)
 app.include_router(token_budget.router)
 app.include_router(dedup.router)
+
+# --- Feature Routers (Batch 11) ---
+from app.api.routes import idempotency, changelog, health_monitor
+app.include_router(idempotency.router)
+app.include_router(changelog.router)
+app.include_router(health_monitor.router)
 
 
 if __name__ == "__main__":
