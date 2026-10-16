@@ -46,6 +46,7 @@ import app.models.expert_route  # noqa: F401
 import app.models.ab_experiment  # noqa: F401
 import app.models.rule_changelog  # noqa: F401
 import app.models.health_snapshot  # noqa: F401
+import app.models.user_preferences  # noqa: F401
 
 
 settings = get_settings()
@@ -234,6 +235,12 @@ from app.api.routes import idempotency, changelog, health_monitor
 app.include_router(idempotency.router)
 app.include_router(changelog.router)
 app.include_router(health_monitor.router)
+
+# --- Feature Routers (Batch 12) ---
+from app.api.routes import circuit_breaker, preferences, heartbeat
+app.include_router(circuit_breaker.router)
+app.include_router(preferences.router)
+app.include_router(heartbeat.router)
 
 
 if __name__ == "__main__":
